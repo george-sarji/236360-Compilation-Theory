@@ -35,8 +35,6 @@
 (=)         printf("%d ASSIGN %s\n", yylineno, yytext);
 (RELOP HERE)         printf("%d RELOP %s\n", yylineno, yytext);
 (\+|\*|-|\/)         printf("%d BINOP %s\n", yylineno, yytext);
-
-
-.		printf("Lex doesn't know what that is!\n");
+.		printf("Error %s\n", yytext);
 
 %%
