@@ -1,5 +1,6 @@
 #include "tokens.hpp"
 #include <stdio.h>
+#include <iostream>
 #include <string>
 
 std::string current_string = "";
@@ -52,7 +53,7 @@ void illegalEscape(const char *escape)
 	std::string current(escape);
 	// Take the string without the backslash
 	current = current.substr(1);
-	printf("Error undefined escape sequence %s\n", current);
+	std:: cout << "Error undefined escape sequence " << current << std::endl;
 	exit(0);
 }
 
@@ -63,7 +64,7 @@ int main()
 	{
 		if (token == STRING)
 		{
-			printf("%d STRING %s", yylineno, current_string);
+			std::cout << yylineno << " STRING " << current_string << std::endl;
 			current_string = "";
 		}
 	}
