@@ -8,14 +8,16 @@ bool endOfWord = false;
 
 void addWord(const char *word)
 {
-	if(endOfWord) return;
+	if (endOfWord)
+		return;
 	std::string current(word);
 	current_string += current;
 }
 
 void convertEscape(const char *escape)
 {
-	if(endOfWord) return;
+	if (endOfWord)
+		return;
 	std::string current(escape);
 	if (current == "\\n")
 		current_string += "\n";
@@ -50,7 +52,13 @@ void convertEscape(const char *escape)
 			right = (int)current[1] - '0';
 		}
 		// Since we are at hexa, we have to multiply right by 16.
-		char translation = (char)(left * 16 + right);
+		int decimalValue = left * 16 + right;
+		if (decimalValue == 0)
+		{
+			endOfWord = true;
+			return;
+		}
+		char translation = (char)decimalValue;
 		current_string += translation;
 	}
 }
@@ -60,7 +68,7 @@ void illegalEscape(const char *escape)
 	std::string current(escape);
 	// Take the string without the backslash
 	current = current.substr(1);
-	std:: cout << "Error undefined escape sequence " << current << std::endl;
+	std::cout << "Error undefined escape sequence " << current << std::endl;
 	exit(0);
 }
 
