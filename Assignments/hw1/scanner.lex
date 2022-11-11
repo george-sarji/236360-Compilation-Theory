@@ -4,6 +4,9 @@
 #include <stdio.h>
 #include "tokens.hpp"
 
+void addWord(const char *word);
+void convertEscape(const char *escape);
+void illegalEscape(const char *escape);
 %}
 
 %option yylineno
@@ -44,7 +47,7 @@ word        ([ !#-\[\]-~])
 (=)                                                 printf("%d ASSIGN %s\n", yylineno, yytext);
 (>=|<=|==|!=|<|>)                                   printf("%d RELOP %s\n", yylineno, yytext);
 (\+|\*|-|\/)                                        printf("%d BINOP %s\n", yylineno, yytext);
-((\/\/)[^\r\n]*)                                   printf("%d COMMENT //", yylineno);
+((\/\/)[^\r\n]*)                                   printf("%d COMMENT //\n", yylineno);
 ({letter}({letter}|{digit})*)                       printf("%d ID %s\n", yylineno, yytext);
 (0|[1-9]{digit}*)                                   printf("%d NUM %s\n", yylineno, yytext);
 {quote}                                             BEGIN(INPUT_STRING);
