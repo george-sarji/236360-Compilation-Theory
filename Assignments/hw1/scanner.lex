@@ -47,11 +47,6 @@ illegal_escape  \\[^nrt0x\\"]
 ({letter}({letter}|{digit})*)                       printf("%d ID %s\n", yylineno, yytext);
 (0|[1-9]{digit}*)                                   printf("%d NUM %s\n", yylineno, yytext);
 {whitespace}                                        ;
-{quote}                                             BEGIN(STRING);
-<INPUT_STRING>({char}|{escape}|{whitespace})*{quote}                   BEGIN(INITIAL); return STRING;
-<INPUT_STRING>({char}|{illegal_escape}|{whitespace})*{quote}           BEGIN(INITIAL); return 30;
-<INPUT_STRING><<EOF>>                                     printf("Error unclosed string\n"); BEGIN(INITIAL);
-<INPUT_STRING>.|[\r\n]                              printf("Error unclosed string\n"); BEGIN(INITIAL);
 .		                                            printf("Error %s\n", yytext);
 
 %%
