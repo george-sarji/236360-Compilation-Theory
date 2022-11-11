@@ -44,7 +44,8 @@ void convertEscape(const char *escape)
 			right = (int)current[1] - '0';
 		}
 		// Since we are at hexa, we have to multiply right by 16.
-		current_string += (char)(right * 16 + left);
+		char translation = (char)(left * 16 + right);
+		current_string += translation;
 	}
 }
 
