@@ -38,6 +38,7 @@
 ((\/\/)[^\n|\r]*)   printf("%d COMMENT //", yylineno);
 ([a-zA-Z][a-zA-Z0-9]*)         printf("%d ID %s\n", yylineno, yytext);
 ([1-9][0-9]*)         printf("%d NUM %s\n", yylineno, yytext);
+(\"([^\\\n\r]|\\[rn\"\\])*\")         return STRING;
 .		printf("Error %s\n", yytext);
 
 %%
