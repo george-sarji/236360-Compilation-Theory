@@ -9,6 +9,14 @@
 %option yylineno
 %option noyywrap
 
+digit       ([0-9])
+letter      ([a-zA-Z])
+char        ([^\n\r\\"])
+whitespace  ([\t\n\r ])
+quote       ([\"])
+escape      \\[nrt0x\\"]
+illegal_escape  \\[^nrt0x\\"]
+%x INPUT_STRING
 %%
 (void)                                              printf("%d VOID %s\n", yylineno, yytext);
 (int)                                               printf("%d INT %s\n", yylineno, yytext);
@@ -33,13 +41,17 @@
 (\{)                                                printf("%d LBRACE %s\n", yylineno, yytext);
 (\})                                                printf("%d RBRACE %s\n", yylineno, yytext);
 (=)                                                 printf("%d ASSIGN %s\n", yylineno, yytext);
-((\?!<>)(<=|>=|==|!=|<|>))                          printf("%d RELOP %s\n", yylineno, yytext);
+(>=|<=|==|!=|<|>)                                   printf("%d RELOP %s\n", yylineno, yytext);
 (\+|\*|-|\/)                                        printf("%d BINOP %s\n", yylineno, yytext);
 ((\/\/)[^\n|\r]*)                                   printf("%d COMMENT //", yylineno);
-([a-zA-Z][a-zA-Z0-9]*)                              printf("%d ID %s\n", yylineno, yytext);
-(0|[1-9][0-9]*)                                     printf("%d NUM %s\n", yylineno, yytext);
-(\"([^\\\n\r]|\\[rn\"\\])*\")                       return STRING;
-[\r\n\t ]                                           ;
+({letter}({letter}|{digit})*)                       printf("%d ID %s\n", yylineno, yytext);
+(0|[1-9]{digit}*)                                   printf("%d NUM %s\n", yylineno, yytext);
+{whitespace}                                        ;
+{quote}                                             BEGIN(STRING);
+<INPUT_STRING>({char}|{escape}|{whitespace})*{quote}                   BEGIN(INITIAL); return STRING;
+<INPUT_STRING>({char}|{illegal_escape}|{whitespace})*{quote}           BEGIN(INITIAL); return 30;
+<INPUT_STRING><<EOF>>                                     printf("Error unclosed string\n"); BEGIN(INITIAL);
+<INPUT_STRING>.|[\r\n]                              printf("Error unclosed string\n"); BEGIN(INITIAL);
 .		                                            printf("Error %s\n", yytext);
 
 %%
