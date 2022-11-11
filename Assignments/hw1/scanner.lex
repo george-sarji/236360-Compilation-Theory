@@ -53,6 +53,7 @@ word        ([ !#-\[\]-~])
 {quote}                                             BEGIN(INPUT_STRING);
 <INPUT_STRING>{word}*                               addWord(yytext);
 <INPUT_STRING>{escape}                              convertEscape(yytext);
+<INPUT_STRING>\\x[^\r\n\t \"]{1,2}                  illegalEscape(yytext);
 <INPUT_STRING>\\.                                   illegalEscape(yytext);
 <INPUT_STRING>[\n\r]                                printf("Error unclosed string\n"); exit(0);
 <INPUT_STRING><<EOF>>                               printf("Error unclosed string\n"); exit(0);
