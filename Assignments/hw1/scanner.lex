@@ -36,6 +36,8 @@
 (RELOP HERE)         printf("%d RELOP %s\n", yylineno, yytext);
 (\+|\*|-|\/)         printf("%d BINOP %s\n", yylineno, yytext);
 ((\/\/)[^\n|\r]*)   printf("%d COMMENT //", yylineno);
+([a-zA-Z][a-zA-Z0-9]*)         printf("%d ID %s\n", yylineno, yytext);
+([1-9][0-9]*)         printf("%d NUM %s\n", yylineno, yytext);
 .		printf("Error %s\n", yytext);
 
 %%
