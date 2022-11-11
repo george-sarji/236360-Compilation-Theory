@@ -4,15 +4,18 @@
 #include <string>
 
 std::string current_string = "";
+bool endOfWord = false;
 
 void addWord(const char *word)
 {
+	if(endOfWord) return;
 	std::string current(word);
 	current_string += current;
 }
 
 void convertEscape(const char *escape)
 {
+	if(endOfWord) return;
 	std::string current(escape);
 	if (current == "\\n")
 		current_string += "\n";
@@ -20,8 +23,11 @@ void convertEscape(const char *escape)
 		current_string += "\r";
 	else if (current == "\\t")
 		current_string += "\t";
-	else if (current == "\\\0")
+	else if (current == "\\0")
+	{
 		current_string += "\0";
+		endOfWord = true;
+	}
 	else if (current == "\\\\")
 		current_string += "\\";
 	else if (current == "\\\"")
@@ -67,6 +73,7 @@ int main()
 		{
 			std::cout << yylineno << " STRING " << current_string << std::endl;
 			current_string = "";
+			endOfWord = false;
 		}
 	}
 	return 0;
