@@ -19,6 +19,7 @@ whitespace  ([\t\n\r ])
 quote       ([\"])
 escape      \\(n|r|t|0|\\|\"|x([0-7][0-9A-F]))
 word        ([ !#-\[\]-~])
+tab         (\t)
 
 %x INPUT_STRING
 %%
@@ -52,6 +53,7 @@ word        ([ !#-\[\]-~])
 (0|[1-9]{digit}*)                                   printf("%d NUM %s\n", yylineno, yytext);
 {quote}                                             BEGIN(INPUT_STRING);
 <INPUT_STRING>{word}*                               addWord(yytext);
+<INPUT_STRING>{tab}*                                addWord(yytext);
 <INPUT_STRING>{escape}                              convertEscape(yytext);
 <INPUT_STRING>\\x[^\r\n\t \"]{1,2}                  illegalEscape(yytext);
 <INPUT_STRING>\\.                                   illegalEscape(yytext);
