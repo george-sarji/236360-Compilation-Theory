@@ -1,0 +1,9 @@
+// Check undef escape in string that doesn't terminate properly
+
+int main() {
+	print("Hello world!");
+	print("Nice end 
+		here
+		");
+	return 0;
+}
