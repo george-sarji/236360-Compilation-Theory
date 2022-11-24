@@ -1,8 +1,8 @@
 #!/bin/bash 
-# change these per each homework 
+# change these per each homework
 #	link to tests:
-testsurl="https://webcourse.cs.technion.ac.il/fc159753hw_236360_202201/hw/WCFiles/hw2-tests.zip"
-makefileurl="https://webcourse.cs.technion.ac.il/fc159753hw_236360_202201/hw/WCFiles/Makefile-hw2"
+testsurl="https://webcourse.cs.technion.ac.il/fc159753hw_236360_202201/hw/WCFiles/X2363602022011-hw2-tests.zip"
+makefileurl="https://webcourse.cs.technion.ac.il/fc159753hw_236360_202201/hw/WCFiles/X2363602022011-Makefile-hw2"
 #	number of tests: 
 numtests=2 
 #	command to execute test: 
@@ -70,7 +70,7 @@ if [ ! -f output.hpp ]
 	exit
 fi
 
-wget --no-check-certificate "$makefileurl" &> /dev/null
+wget --no-check-certificate "$makefileurl" -O Makefile-hw2 &> /dev/null
 if [ ! -f Makefile-hw2 ]
 	then
 		echo "Unable to download makefile!"
@@ -85,14 +85,14 @@ if [ ! -f hw2 ]
 	exit 
 fi 
 
-wget --no-check-certificate "$testsurl" &> /dev/null 
-if [ ! -f $( basename "$testsurl" ) ] 
+wget --no-check-certificate "$testsurl" -O hw2-tests.zip &> /dev/null 
+if [ ! -f hw2-tests.zip ] 
 	then 
 	echo "Unable to download tests!" 
 	exit 
 fi
 
-unzip $( basename "$testsurl" ) &> /dev/null
+unzip hw2-tests.zip &> /dev/null
 
 if [[ $? != 0 ]]
 	then 
