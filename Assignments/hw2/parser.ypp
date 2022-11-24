@@ -80,7 +80,8 @@ Type: INT                                                                   { ou
     | BYTE                                                                  { output::printProductionRule(31); }
     | BOOL                                                                  { output::printProductionRule(32); }
 Exp: LPAREN Exp RPAREN                                                      { output::printProductionRule(33); }
-    | Exp BINOP Exp                                                         { output::printProductionRule(34); } // TODO: SPLIT
+    | Exp ADD_BINOP Exp                                                     { output::printProductionRule(34); }
+    | Exp BINOP Exp                                                         { output::printProductionRule(34); }
     | ID                                                                    { output::printProductionRule(35); }
     | Call                                                                  { output::printProductionRule(36); }
     | NUM                                                                   { output::printProductionRule(37); }
@@ -91,7 +92,8 @@ Exp: LPAREN Exp RPAREN                                                      { ou
     | NOT Exp                                                               { output::printProductionRule(42); }
     | Exp AND Exp                                                           { output::printProductionRule(43); }
     | Exp OR Exp                                                            { output::printProductionRule(44); }
-    | Exp RELOP Exp                                                         { output::printProductionRule(45); } // TODO: SPLIT
+    | Exp EQ_RELOP Exp                                                      { output::printProductionRule(45); }
+    | Exp RELOP Exp                                                         { output::printProductionRule(45); }
     | LPAREN Type RPAREN Exp                                                { output::printProductionRule(46); }
 
 %%
