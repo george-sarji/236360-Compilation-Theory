@@ -1,0 +1,51 @@
+%{
+    #include "tokens.hpp"
+    #include "output.hpp"
+    #include <iostream>
+    using namespace std;
+    
+    extern int yylex();
+    extern int yylineno;
+    int yyerror(const char* message);
+%}
+
+/* Tokens section */
+
+/* Add all the reserved keywords that have no left or right association */
+%nonassoc VOID;
+%nonassoc INT;
+%nonassoc BYTE;
+%nonassoc B;
+%nonassoc BOOL;
+%nonassoc TRUE;
+%nonassoc FALSE;
+%nonassoc RETURN;
+%nonassoc IF;
+%nonassoc ELSE;
+%nonassoc WHILE;
+%nonassoc BREAK;
+%nonassoc CONTINUE;
+%nonassoc SC;
+%nonassoc COMMA;
+%nonassoc ID;
+%nonassoc NUM;
+%nonassoc STRING;
+
+%%
+
+/* Rules section */
+
+%%
+
+/* Functions section */
+
+int main()
+{
+    return yyparse();
+}
+
+int yyerror(const char* message)
+{
+    output::errorSyn(yylinen);
+    exit(0);
+}
