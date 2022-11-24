@@ -1,6 +1,6 @@
 %{
+    #define YYSTYPE int
     #include "output.hpp"
-    #include "tokens.hpp"
     #include "parser.tab.hpp"
     using namespace std;
 %}
