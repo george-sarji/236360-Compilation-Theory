@@ -3,7 +3,7 @@
     #include "tokens.hpp"
     #include "parser.tab.hpp"
     using namespace std;
-}%
+%}
 
 %option yylineno
 %option noyywrap
@@ -38,7 +38,7 @@ continue                            return CONTINUE;
 (\/|\*)                             return BINOP;
 [a-zA-Z][a-zA-Z0-9]*                return ID;
 0|[1-9][0-9]*                       return NUM;
-"([^\n\r\"\\]|\\[rnt"\\])+"         return STRING;
+\"([^\n\r\"\\]|\\[rnt"\\])+\"         return STRING;
 [\r\n\t ]                           ;
 (\/\/)[^\r\n]*                      ;
 .                                   { output::errorLex(yylineno); exit(0); }
