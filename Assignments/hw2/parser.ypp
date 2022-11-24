@@ -30,6 +30,18 @@
 %nonassoc ID;
 %nonassoc NUM;
 %nonassoc STRING;
+%right ASSIGN;
+%left OR;
+%left AND;
+%left EQ_RELOP;
+%nonassoc RELOP;
+%left ADD_BINOP;
+%left BINOP;
+%right NOT;
+%left RBRACE;
+%left LBRACE;
+%left RPAREN;
+%left LPAREN;
 
 %%
 
