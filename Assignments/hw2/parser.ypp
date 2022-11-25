@@ -2,6 +2,8 @@
     #include "output.hpp"
     #include <iostream>
     using namespace std;
+
+    #define YYSTYPE int
     
     extern int yylex();
     extern int yylineno;
