@@ -1,0 +1,12 @@
+Place hw2tester in a sub-folder of the folder you have your homework compiled. Then, give hw2tester up to 4 arguments:
+1: number of tests
+2: functions per test
+3: max statements per function (don't recommend more than 50, the filesize reaches megabytes)
+4: allow excessive whitespace (0 for no, any other number for yes)
+
+As of now, this does not test any of the following:
+* comments that contain '\r', '\n', or (char)0xff. I'm pretty sure this tests exactly all legal comments, but do correct me if i'm wrong.
+* strings that contain '\r', '\n', '"', '\\', or (char)0xff. Again, pretty sure this tests exactly all legal strings.
+* syntax errors or lexical errors.
+
+In case you got this zip, you don't know where it came from, and want to report a problem, contact me at itaybe@campus.technion.ac.il
