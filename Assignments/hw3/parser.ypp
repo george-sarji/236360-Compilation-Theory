@@ -1,0 +1,111 @@
+%{
+    #include "output.hpp"
+    #include <iostream>
+    using namespace std;
+
+    extern int yylex();
+    extern int yylineno;
+    int yyerror(const char* message);
+%}
+
+/* Tokens section */
+
+/* Add all the reserved keywords that have no left or right association */
+%nonassoc VOID;
+%nonassoc INT;
+%nonassoc BYTE;
+%nonassoc B;
+%nonassoc BOOL;
+%nonassoc TRUE;
+%nonassoc FALSE;
+%nonassoc RETURN;
+%nonassoc IF;
+%nonassoc ELSE;
+%nonassoc WHILE;
+%nonassoc BREAK;
+%nonassoc CONTINUE;
+%nonassoc SC;
+%nonassoc COMMA;
+%nonassoc ID;
+%nonassoc NUM;
+%nonassoc STRING;
+%right ASSIGN;
+%left OR;
+%left AND;
+%left EQ_RELOP;
+%nonassoc RELOP;
+%left ADD_BINOP;
+%left BINOP;
+%right NOT;
+%left RBRACE;
+%left LBRACE;
+%left RPAREN;
+%left LPAREN;
+
+%%
+
+/* Rules section */
+
+Program: Funcs                                                              { output::printProductionRule(1); }
+Funcs:                                                                      { output::printProductionRule(2); }
+    | FuncDecl Funcs                                                        { output::printProductionRule(3); }
+FuncDecl: RetType ID LPAREN Formals RPAREN LBRACE Statements RBRACE         { output::printProductionRule(4); }
+RetType: Type                                                               { output::printProductionRule(5); }
+    | VOID                                                                  { output::printProductionRule(6); }
+Formals:                                                                    { output::printProductionRule(7); }
+    | FormalsList                                                           { output::printProductionRule(8); }
+FormalsList: FormalDecl                                                     { output::printProductionRule(9); }
+    | FormalDecl COMMA FormalsList                                          { output::printProductionRule(10); }
+FormalDecl: Type ID                                                         { output::printProductionRule(11); }
+Statements: Statement                                                       { output::printProductionRule(12); }
+    | Statements Statement                                                  { output::printProductionRule(13); }
+Statement: LBRACE Statements RBRACE                                         { output::printProductionRule(14); }
+    | Type ID SC                                                            { output::printProductionRule(15); }
+    | Type ID ASSIGN Exp SC                                                 { output::printProductionRule(16); }
+    | ID ASSIGN Exp SC                                                      { output::printProductionRule(17); }
+    | Call SC                                                               { output::printProductionRule(18); }
+    | RETURN SC                                                             { output::printProductionRule(19); }
+    | RETURN Exp SC                                                         { output::printProductionRule(20); }
+    | IF LPAREN Exp RPAREN Statement %prec IF                                        { output::printProductionRule(21); }
+    | IF LPAREN Exp RPAREN Statement ELSE Statement                         { output::printProductionRule(22); }
+    | WHILE LPAREN Exp RPAREN Statement                                     { output::printProductionRule(23); }
+    | BREAK SC                                                              { output::printProductionRule(24); }
+    | CONTINUE SC                                                           { output::printProductionRule(25); }
+Call: ID LPAREN ExpList RPAREN                                              { output::printProductionRule(26); }
+    | ID LPAREN RPAREN                                                      { output::printProductionRule(27); }
+ExpList: Exp                                                                { output::printProductionRule(28); }
+    | Exp COMMA ExpList                                                     { output::printProductionRule(29); }
+Type: INT                                                                   { output::printProductionRule(30); }
+    | BYTE                                                                  { output::printProductionRule(31); }
+    | BOOL                                                                  { output::printProductionRule(32); }
+Exp: LPAREN Exp RPAREN                                                      { output::printProductionRule(33); }
+    | Exp ADD_BINOP Exp                                                     { output::printProductionRule(34); }
+    | Exp BINOP Exp                                                         { output::printProductionRule(34); }
+    | ID                                                                    { output::printProductionRule(35); }
+    | Call                                                                  { output::printProductionRule(36); }
+    | NUM                                                                   { output::printProductionRule(37); }
+    | NUM B                                                                 { output::printProductionRule(38); }
+    | STRING                                                                { output::printProductionRule(39); }
+    | TRUE                                                                  { output::printProductionRule(40); }
+    | FALSE                                                                 { output::printProductionRule(41); }
+    | NOT Exp                                                               { output::printProductionRule(42); }
+    | Exp AND Exp                                                           { output::printProductionRule(43); }
+    | Exp OR Exp                                                            { output::printProductionRule(44); }
+    | Exp EQ_RELOP Exp                                                      { output::printProductionRule(45); }
+    | Exp RELOP Exp                                                         { output::printProductionRule(45); }
+    | LPAREN Type RPAREN Exp                                                { output::printProductionRule(46); }
+
+%%
+
+/* Functions section */
+
+int main()
+{
+    return yyparse();
+}
+
+int yyerror(const char* message)
+{
+    output::errorSyn(yylineno);
+    exit(0);
+}
