@@ -94,6 +94,7 @@ Exp: LPAREN Exp RPAREN                                                      { ou
     | Exp EQ_RELOP Exp                                                      { output::printProductionRule(45); }
     | Exp RELOP Exp                                                         { output::printProductionRule(45); }
     | LPAREN Type RPAREN Exp                                                { output::printProductionRule(46); }
+    | Exp IF LPAREN Exp RPAREN ELSE Exp                                     { output::printProductionRule(34); }
 
 %%
 
