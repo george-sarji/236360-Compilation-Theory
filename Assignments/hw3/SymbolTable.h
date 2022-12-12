@@ -36,8 +36,10 @@ public:
     void addScope();
     void dropScope();
 
-    bool isDefined();
+    bool isDefined(string symName);
     void addNewSymbol();
+
+    TableRow* getSymbol(string symName);
 
 private:
     stack<ScopeTable> scopes;

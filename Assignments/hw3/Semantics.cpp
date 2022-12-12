@@ -5,6 +5,8 @@
 extern int yylineno;
 extern char *yytext;
 
+SymbolTable *table;
+
 Node::Node(string value) : value()
 {
     // Check for known types.
@@ -108,5 +110,64 @@ Exp::Exp(Exp *left, Node *op, Exp *right, bool isRelop)
 
 Exp::Exp(Node *id)
 {
-    // We need to check
+    // We need to check if the given ID is a valid ID.
+    if (table->isDefined(id->value))
+    {
+        output::errorUndef(yylineno, id->value);
+        exit(0);
+    }
+
+    // We have a valid identifier that is defined in the symbol table.
+    // Let's fetch it from the symbol table.
+    TableRow *entryRow = table->getSymbol(id->value);
+    // Assign the same type and value.
+    value = id->value;
+    type = entryRow->type.back();
+}
+
+Exp::Exp(Node *term, string expType) : Node(term->value)
+{
+    // Int is derived from NUM.
+    if (expType == "NUM")
+    {
+        type = "INT";
+    }
+    // Byte is derived from byte.
+    if (expType == "BYTE")
+    {
+        type = "BYTE";
+        // Do we have a byte that is too large? Check the value.
+        // If the value is bigger than 255 -> not a valid byte.
+        if (stoi(term->value) > 255)
+        {
+            // We have a problem. Throw a byte too large error and exit.
+            output::errorByteTooLarge(yylineno, term->value);
+            exit(0);
+        }
+    }
+    // Is it bool?
+    if (expType == "BOOL")
+    {
+        type = "BOOL";
+        // Check the bool value.
+        booleanValue = term->value == "true";
+    }
+}
+
+Exp::Exp(Node *notNode, Exp *exp)
+{
+    // Do we have a bool?
+    if (exp->type != "BOOL")
+    {
+        // Mismatch in operands, can't perform NOT on non-bool.
+        output::errorMismatch(yylineno);
+        exit(0);
+    }
+    // Set the type as bool, negate the boolean value.
+    type = "BOOL";
+    booleanValue = !exp->booleanValue;
+}
+
+Exp::Exp(Type *type, Exp *exp)
+{
 }

@@ -77,7 +77,7 @@ public:
     explicit Exp(Node *id);
 
     // Exp: NUM/NUM B/STRING/TRUE/FALSE
-    Exp(Node *term, string type);
+    Exp(Node *term, string expType);
 
     // Exp: NOT Exp
     Exp(Node *notNode, Exp *exp);
