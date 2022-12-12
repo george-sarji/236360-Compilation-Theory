@@ -82,4 +82,93 @@ public:
     Exp(Type *type, Exp *exp);
 };
 
+class ExpList : public Node
+{
+public:
+    vector<Exp *> expressions;
+
+    // ExpList: Exp
+    explicit ExpList(Exp *exp);
+
+    // ExpList: Exp COMMA ExpList
+    ExpList(Exp *exp, ExpList *list);
+};
+
+class Call : public Node
+{
+public:
+    // Call: ID LAPREN ExpList RPAREN
+    Call(Node *id, ExpList *expList);
+
+    // Call: ID LPAREN RPAREN
+    explicit Call(Node *id);
+};
+
+class Statement : public Node
+{
+public:
+    // Statement: Type ID SC
+    Statement(Type *type, Node *id);
+
+    // Statement: Type ID ASSIGN Exp SC
+    Statement(Type *type, Node *id, Exp *exp);
+
+    // Statement: ID ASSIGN Exp SC
+    Statement(Node *id, Exp *exp);
+
+    // Statement: Call SC
+    explicit Statement(Call *call);
+
+    // Statement: RETURN Exp SC
+    explicit Statement(Exp *exp);
+
+    // Statement: IF LPAREN Exp RPAREN Statement IF
+    // Statement: WHILE LPAREN Exp RPAREN Statement
+    Statement(Exp *exp, Statement *statement);
+
+    // Statement: IF LPAREN Exp RPAREN Statement ELSE Statement
+    Statement(Exp *exp, Statement *statement1, Statement *statement2);
+
+    // Statement: BREAK SC
+    // Statement: CONTINUE SC
+    Statement(Node *node);
+};
+
+class Statements : public Node
+{
+public:
+    vector<Statement *> statements;
+
+    // Statements: Statement
+    explicit Statements(Statement *statement);
+
+    // Statements: Statements Statement
+    Statements(Statements *statements, Statement *statement);
+};
+
+class FuncDecl : public Node
+{
+public:
+    // FuncDecl: RetType ID LPAREN Formals RPAREN LBRACE Statements RBRACE
+    FuncDecl(RetType *type, Node *id, Formals *formals, Statements *statements);
+};
+
+class Funcs : public Node
+{
+public:
+    vector<FuncDecl *> funcDecls;
+
+    // Funcs: FuncDecl Funcs
+    Funcs(FuncDecl *declarations, Funcs *funcs);
+
+    // Funcs: Epsilon
+    Funcs();
+};
+
+class Program : public Node
+{
+public:
+    explicit Program(Funcs *funcs);
+};
+
 #endif
