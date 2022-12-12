@@ -18,21 +18,23 @@ public:
 class Type : public Node
 {
 public:
-    explicit Type(Node *node);
+    explicit Type(Node *node) : Node(node->value) {}
 };
 
 class RetType : public Node
 {
 public:
     // RetType: Type || RetType: VOID
-    explicit RetType(Node *node);
+    explicit RetType(Node *node) : Node(node->value) {}
 };
 
 class FormalDecl : public Node
 {
 public:
+    string type;
+
     // FormalDecl: Type ID
-    explicit FormalDecl(Type *type, Node *id);
+    explicit FormalDecl(Type *type, Node *id) : Node(id->value), type(type->value) {}
 };
 
 class FormalsList : public Node
@@ -54,20 +56,22 @@ public:
     // Formals: FormalsList
     explicit Formals(FormalsList *list);
     // Formals: Epsilon
-    Formals();
+    Formals() = default;
 };
 
 class Exp : public Node
 {
 public:
+    // Used for type determination for operations
     string type;
-    bool isBool;
+    // Used for comparison for AND/OR
+    bool booleanValue;
 
     // Exp: LPAREN Exp RPAREN
     explicit Exp(Exp *expression);
 
     // Exp: Exp BINOP Exp, Exp AND/OR Exp, Exp RELOP Exp
-    Exp(Exp *left, Node *op, Exp *right);
+    Exp(Exp *left, Node *op, Exp *right, bool isRelop);
 
     // Exp: ID
     explicit Exp(Node *id);
