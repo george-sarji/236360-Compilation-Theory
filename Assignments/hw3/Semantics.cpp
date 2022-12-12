@@ -5,9 +5,6 @@
 extern int yylineno;
 extern char *yytext;
 
-stack<shared_ptr<SymbolTable>> tableStack;
-stack<int> offsets;
-
 Node::Node(string value) : value()
 {
     // Check for known types.
@@ -107,4 +104,9 @@ Exp::Exp(Exp *left, Node *op, Exp *right, bool isRelop)
         output::errorMismatch(yylineno);
         exit(0);
     }
+}
+
+Exp::Exp(Node *id)
+{
+    // We need to check
 }

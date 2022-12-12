@@ -6,6 +6,7 @@ using namespace std;
 #include <vector>
 #include <memory>
 #include <string>
+#include <stack>
 
 class TableRow
 {
@@ -18,12 +19,28 @@ public:
     TableRow(string name, vector<string> type, int offset, bool isFunc) : name(std::move(name)), type(std::move(type)), offset(offset), isFunc(isFunc) {}
 };
 
+class ScopeTable
+{
+private:
+    vector<TableRow> entries;
+
+public:
+    void addRow();
+};
+
 class SymbolTable
 {
 public:
-    vector<shared_ptr<TableRow>> rows;
-
     SymbolTable() = default;
+
+    void addScope();
+    void dropScope();
+
+    bool isDefined();
+    void addNewSymbol();
+
+private:
+    stack<ScopeTable> scopes;
 };
 
 #endif
