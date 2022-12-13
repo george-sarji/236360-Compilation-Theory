@@ -133,7 +133,7 @@ Exp::Exp(Node *term, string expType) : Node(term->value)
         type = "INT";
     }
     // Byte is derived from byte.
-    if (expType == "BYTE")
+    if (expType == "NUM B")
     {
         type = "BYTE";
         // Do we have a byte that is too large? Check the value.
@@ -152,6 +152,7 @@ Exp::Exp(Node *term, string expType) : Node(term->value)
         // Check the bool value.
         booleanValue = term->value == "true";
     }
+    // TODO: Check if we have to throw a mismatch error here
 }
 
 Exp::Exp(Node *notNode, Exp *exp)
@@ -188,4 +189,9 @@ ExpList::ExpList(Exp *exp, ExpList *list)
     // Initialize according to the expression list and insert the expression in the beginning.
     expressions = vector<Exp *>(list->expressions);
     expressions.insert(expressions.begin(), exp);
+}
+
+Statement::Statement(Type* type, Node* id)
+{
+
 }
