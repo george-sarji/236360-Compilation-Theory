@@ -170,4 +170,22 @@ Exp::Exp(Node *notNode, Exp *exp)
 
 Exp::Exp(Type *type, Exp *exp)
 {
+    // We need to validate the casts here according to the exp and the type.
+    // The only allowed casts are between int and byte. We also need to check
+    // That the integer being casted to byte is not bigger than 255.
+    // if((exp->type == "INT" || exp->type == "BYTE") && (type->value == "INT" || type))
+    // TODO: Add validations for the casts
+}
+
+ExpList::ExpList(Exp *exp)
+{
+    // Initialize the expressions vector with the given exp.
+    expressions.insert(expressions.begin(), exp);
+}
+
+ExpList::ExpList(Exp *exp, ExpList *list)
+{
+    // Initialize according to the expression list and insert the expression in the beginning.
+    expressions = vector<Exp *>(list->expressions);
+    expressions.insert(expressions.begin(), exp);
 }
