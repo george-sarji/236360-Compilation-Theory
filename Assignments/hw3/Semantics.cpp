@@ -260,5 +260,13 @@ Statement::Statement(Node *id, Exp *exp)
 Statement::Statement(Call *call)
 {
     // Not much to do here.
+    // TODO: Add return value type check and into statement
 }
+
+Statement::Statement(Exp *exp)
+{
+    // TODO: Check if we are returning the correct type for the current scope.
+}
+
+
 
