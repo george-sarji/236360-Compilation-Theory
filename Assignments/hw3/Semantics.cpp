@@ -230,3 +230,35 @@ Statement::Statement(Type *type, Node *id, Exp *exp)
         exit(0);
     }
 }
+
+Statement::Statement(Node *id, Exp *exp)
+{
+    // Check if ID is defined.
+    if (!table->isDefined(id->value))
+    {
+        // Not defined. Exit.
+        output::errorUndef(yylineno, id->value);
+        exit(0);
+    }
+    // We now need to check if the expression and the symbol types match.
+    TableRow *matchingRow = table->getSymbol(id->value);
+    string symbolType = matchingRow->type.back();
+    if (symbolType == exp->type || (symbolType == "INT" && exp->type == "BYTE"))
+    {
+        // We have a valid cast.
+        // We need to update the symbol.
+        // TODO: Add symbol update
+    }
+    else
+    {
+        // Not a valid cast.
+        output::errorMismatch(yylineno);
+        exit(0);
+    }
+}
+
+Statement::Statement(Call *call)
+{
+    // Not much to do here.
+}
+
