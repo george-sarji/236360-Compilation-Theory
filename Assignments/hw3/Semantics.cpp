@@ -169,7 +169,7 @@ Exp::Exp(Node *notNode, Exp *exp)
     booleanValue = !exp->booleanValue;
 }
 
-Exp::Exp(Type *type, Exp *exp): Node(type->value)
+Exp::Exp(Type *type, Exp *exp) : Node(type->value)
 {
     // We need to validate the casts here according to the exp and the type.
     // The only allowed casts are between int and byte.
@@ -193,6 +193,17 @@ ExpList::ExpList(Exp *exp, ExpList *list)
     expressions.insert(expressions.begin(), exp);
 }
 
-Statement::Statement(Type *type, Node *id)
+Statement::Statement(Type *type, Node *id):
 {
+    // Check if we have an id defined.
+    if (table->isDefined(id->value))
+    {
+        output::errorDef(yylineno, id->value);
+        exit(0);
+    }
+    // We don't have that ID defined. Let's add it.
+    value = type->value;
+    // TODO: Add the symbol parameters.
+    table->addNewSymbol();
 }
+
