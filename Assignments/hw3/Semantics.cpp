@@ -193,7 +193,7 @@ ExpList::ExpList(Exp *exp, ExpList *list)
     expressions.insert(expressions.begin(), exp);
 }
 
-Statement::Statement(Type *type, Node *id):
+Statement::Statement(Type *type, Node *id)
 {
     // Check if we have an id defined.
     if (table->isDefined(id->value))
