@@ -207,3 +207,26 @@ Statement::Statement(Type *type, Node *id)
     table->addNewSymbol();
 }
 
+Statement::Statement(Type *type, Node *id, Exp *exp)
+{
+    // Check if we have such a defined ID.
+    if (table->isDefined(id->value))
+    {
+        output::errorDef(yylineno, id->value);
+        exit(0);
+    }
+    // We don't have such a defined symbol.
+    // Let's check if the types are allowed.
+    if (type->value == exp->value || (type->value == "INT" && exp->type == "BYTE"))
+    {
+        // Valid expression. Add to the symbol table.
+        // TODO: Add the symbol parameters.
+        table->addNewSymbol();
+    }
+    else
+    {
+        // Not allowed. Throw mismatch.
+        output::errorMismatch(yylineno);
+        exit(0);
+    }
+}
