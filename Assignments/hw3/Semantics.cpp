@@ -169,7 +169,7 @@ Exp::Exp(Node *notNode, Exp *exp)
     booleanValue = !exp->booleanValue;
 }
 
-Exp::Exp(Type *type, Exp *exp)
+Exp::Exp(Type *type, Exp *exp): Node(type->value)
 {
     // We need to validate the casts here according to the exp and the type.
     // The only allowed casts are between int and byte.
@@ -178,8 +178,6 @@ Exp::Exp(Type *type, Exp *exp)
         output::errorMismatch(yylineno);
         exit(0);
     }
-    this->type = type->value;
-    this->value = exp->value;
 }
 
 ExpList::ExpList(Exp *exp)

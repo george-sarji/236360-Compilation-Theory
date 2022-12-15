@@ -24,7 +24,8 @@ public:
 class RetType : public Node
 {
 public:
-    // RetType: Type || RetType: VOID
+    // RetType: Type
+    // RetType: VOID
     explicit RetType(Node *node) : Node(node->value) {}
 };
 
