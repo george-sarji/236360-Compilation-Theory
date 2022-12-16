@@ -268,5 +268,15 @@ Statement::Statement(Exp *exp)
     // TODO: Check if we are returning the correct type for the current scope.
 }
 
+Statements::Statements(Statement *statement)
+{
+    statements.insert(statements.begin(), statement);
+}
 
-
+Statements::Statements(Statements *statements, Statement *statement)
+{
+    // Create a vector with the given statements.
+    this->statements = vector<Statement *>(statements->statements);
+    // Push the new statement to the back.
+    this->statements.push_back(statement);
+}
