@@ -280,3 +280,4 @@ Statements::Statements(Statements *statements, Statement *statement)
     // Push the new statement to the back.
     this->statements.push_back(statement);
 }
+
