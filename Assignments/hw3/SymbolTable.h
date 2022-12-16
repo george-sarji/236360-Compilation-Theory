@@ -38,8 +38,9 @@ public:
 
     bool isDefined(string symName);
     void addNewSymbol();
-
+    bool isInScope(string scopeName);
     TableRow* getSymbol(string symName);
+    
 
 private:
     stack<ScopeTable> scopes;
