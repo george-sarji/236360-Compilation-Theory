@@ -263,6 +263,8 @@ Statement::Statement(Call *call)
 
 Statement::Statement(Exp *exp)
 {
+    // This ctor will handle the return exp part.
+    // We need to check if the returned expression matches with the current scope.
     // TODO: Check if we are returning the correct type for the current scope.
 }
 
@@ -271,12 +273,12 @@ Statement::Statement(Exp *exp, Statement *statement)
     // TODO: Add
 }
 
-Statement::Statement(Exp* exp, Statement* statement1, Statement* statement2)
+Statement::Statement(Exp *exp, Statement *statement1, Statement *statement2)
 {
     // TODO: Add
 }
 
-Statement::Statement(Node* node)
+Statement::Statement(Node *node)
 {
     // TODO: Add
 }

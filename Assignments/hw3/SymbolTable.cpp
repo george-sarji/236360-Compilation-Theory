@@ -1,8 +1,10 @@
 #include "SymbolTable.h"
 #include "hw3_output.hpp"
+#include "Debugger.h"
 
 bool SymbolTable::isDefined(string symbol, bool funcSearch)
 {
+    Debugger::print("Checking table for symbol " + symbol);
     // We need to go over all of the scopes and check in each scope.
     // We will iterate in reverse, as the top scope is pushed to the back.
     for (auto it = scopes.rbegin(); it != scopes.rend(); ++it)
