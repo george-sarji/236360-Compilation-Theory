@@ -22,10 +22,12 @@ public:
 class ScopeTable
 {
 private:
-    vector<TableRow> entries;
+    vector<TableRow *> entries;
 
 public:
-    void addRow();
+    void addRow(string name, string type);
+
+    bool isDefined(string symName);
 };
 
 class SymbolTable
@@ -37,13 +39,13 @@ public:
     void dropScope();
 
     bool isDefined(string symName);
-    void addNewSymbol();
+    void addNewSymbol(string name, string type);
+    void addNewFunction();
     bool isInScope(string scopeName);
-    TableRow* getSymbol(string symName);
-    
+    TableRow *getSymbol(string symName);
 
 private:
-    stack<ScopeTable> scopes;
+    vector<ScopeTable* > scopes;
 };
 
 #endif
