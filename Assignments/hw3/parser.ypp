@@ -1,5 +1,5 @@
 %{
-    #include "output.hpp"
+    #include "hw3_output.hpp"
     #include <iostream>
     using namespace std;
 
@@ -66,7 +66,7 @@ Statement: LBRACE Statements RBRACE                                         { ou
     | Call SC                                                               { output::printProductionRule(18); }
     | RETURN SC                                                             { output::printProductionRule(19); }
     | RETURN Exp SC                                                         { output::printProductionRule(20); }
-    | IF LPAREN Exp RPAREN Statement %prec IF                                        { output::printProductionRule(21); }
+    | IF LPAREN Exp RPAREN Statement %prec IF                               { output::printProductionRule(21); }
     | IF LPAREN Exp RPAREN Statement ELSE Statement                         { output::printProductionRule(22); }
     | WHILE LPAREN Exp RPAREN Statement                                     { output::printProductionRule(23); }
     | BREAK SC                                                              { output::printProductionRule(24); }
