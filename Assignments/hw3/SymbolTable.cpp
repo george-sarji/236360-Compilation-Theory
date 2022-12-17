@@ -100,3 +100,26 @@ void SymbolTable::dropScope()
     // Remove the last offset.
     offsets.pop_back();
 }
+
+void ScopeTable::closeAsScope()
+{
+    // Go over the elements in the entries vector and print as required.
+    for (auto entry : entries)
+    {
+        // Is it a function?
+        if (entry->isFunc)
+        {
+            // Get the return type (end of vector)
+            string returnType = entry->type.back();
+            // Push it out as we need only the arguments next.
+            entry->type.pop_back();
+            // Use the function print.
+            output::printID(entry->name, entry->offset, output::makeFunctionType(returnType, entry->type));
+        }
+        // It's not a function, use a regular print without function types.
+        else
+        {
+            output::printID(entry->name, entry->offset, entry->type.back());
+        }
+    }
+}
