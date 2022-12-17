@@ -28,14 +28,14 @@ public:
     void addRow(string name, string type, int offset);
     void addFuncRow(string name, vector<string> types, int offset);
     bool isDefined(string symName, bool funcSearch);
+    TableRow *getSymbol(string symName);
     void closeAsScope();
 };
 
 class SymbolTable
 {
-    private:
+private:
     bool isDefined(string symName, bool funcSearch);
-
 
 public:
     SymbolTable() = default;

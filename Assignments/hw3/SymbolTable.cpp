@@ -138,3 +138,26 @@ void ScopeTable::closeAsScope()
         }
     }
 }
+
+TableRow *ScopeTable::getSymbol(string symName)
+{
+    // Go over the entries and get the first that matches the symbol name.
+    for (auto entry : entries)
+    {
+        if (entry->name == symName)
+            return entry;
+    }
+    return nullptr;
+}
+
+TableRow *SymbolTable::getSymbol(string symName)
+{
+    // Go over the scopes from the top and look for the symbol.
+    for (auto scope : scopes)
+    {
+        TableRow *returned = scope->getSymbol(symName);
+        if (returned != nullptr)
+            return returned;
+    }
+    return nullptr;
+}
