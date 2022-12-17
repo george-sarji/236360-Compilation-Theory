@@ -24,7 +24,7 @@ bool SymbolTable::isDefinedVariable(string symbol)
     return isDefined(symbol, false);
 }
 
-bool ScopeTable::isDefined(string symName, bool, funcSearch)
+bool ScopeTable::isDefined(string symName, bool funcSearch)
 {
     for (TableRow *row : entries)
     {
