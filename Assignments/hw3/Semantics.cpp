@@ -111,7 +111,7 @@ Exp::Exp(Exp *left, Node *op, Exp *right, bool isRelop)
 Exp::Exp(Node *id)
 {
     // We need to check if the given ID is a valid ID.
-    if (table->isDefined(id->value))
+    if (table->isDefinedVariable(id->value))
     {
         output::errorUndef(yylineno, id->value);
         exit(0);
@@ -196,7 +196,7 @@ ExpList::ExpList(Exp *exp, ExpList *list)
 Statement::Statement(Type *type, Node *id)
 {
     // Check if we have an id defined.
-    if (table->isDefined(id->value))
+    if (table->isDefinedVariable(id->value))
     {
         output::errorDef(yylineno, id->value);
         exit(0);
@@ -210,7 +210,7 @@ Statement::Statement(Type *type, Node *id)
 Statement::Statement(Type *type, Node *id, Exp *exp)
 {
     // Check if we have such a defined ID.
-    if (table->isDefined(id->value))
+    if (table->isDefinedVariable(id->value))
     {
         output::errorDef(yylineno, id->value);
         exit(0);
@@ -234,7 +234,7 @@ Statement::Statement(Type *type, Node *id, Exp *exp)
 Statement::Statement(Node *id, Exp *exp)
 {
     // Check if ID is defined.
-    if (!table->isDefined(id->value))
+    if (!table->isDefinedVariable(id->value))
     {
         // Not defined. Exit.
         output::errorUndef(yylineno, id->value);
