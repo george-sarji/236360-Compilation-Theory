@@ -80,21 +80,21 @@ Type: INT                                                                   { ou
     | BYTE                                                                  { output::printProductionRule(31); }
     | BOOL                                                                  { output::printProductionRule(32); }
 Exp: LPAREN Exp RPAREN                                                      { output::printProductionRule(33); $$ = new Exp(dynamic_cast<Exp*>($2)); }
-    | Exp ADD_BINOP Exp                                                     { output::printProductionRule(34); }
-    | Exp BINOP Exp                                                         { output::printProductionRule(34); }
-    | ID                                                                    { output::printProductionRule(35); }
-    | Call                                                                  { output::printProductionRule(36); }
-    | NUM                                                                   { output::printProductionRule(37); }
-    | NUM B                                                                 { output::printProductionRule(38); }
-    | STRING                                                                { output::printProductionRule(39); }
-    | TRUE                                                                  { output::printProductionRule(40); }
-    | FALSE                                                                 { output::printProductionRule(41); }
-    | NOT Exp                                                               { output::printProductionRule(42); }
-    | Exp AND Exp                                                           { output::printProductionRule(43); }
-    | Exp OR Exp                                                            { output::printProductionRule(44); }
-    | Exp EQ_RELOP Exp                                                      { output::printProductionRule(45); }
-    | Exp RELOP Exp                                                         { output::printProductionRule(45); }
-    | LPAREN Type RPAREN Exp                                                { output::printProductionRule(46); }
+    | Exp ADD_BINOP Exp                                                     { output::printProductionRule(34); $$ = new Exp(dynamic_cast<Exp*>($1), $2, dynamic_cast<Exp*>($3), false); }
+    | Exp BINOP Exp                                                         { output::printProductionRule(34); $$ = new Exp(dynamic_cast<Exp*>($1), $2, dynamic_cast<Exp*>($3), false); }
+    | ID                                                                    { output::printProductionRule(35); $$ = new Exp($1); }
+    | Call                                                                  { output::printProductionRule(36); $$ = new Exp(dynamic_cast<Call*>($1)); }
+    | NUM                                                                   { output::printProductionRule(37); $$ = new Exp($1, "NUM"); }
+    | NUM B                                                                 { output::printProductionRule(38); $$ = new Exp($1, "NUM B"); }
+    | STRING                                                                { output::printProductionRule(39); $$ = new Exp($1, "STRING"); }
+    | TRUE                                                                  { output::printProductionRule(40); $$ = new Exp($1, "BOOL"); }
+    | FALSE                                                                 { output::printProductionRule(41); $$ = new Exp($1, "BOOL"); }
+    | NOT Exp                                                               { output::printProductionRule(42); $$ = new Exp($1, dynamic_cast<Exp*>($2)); }
+    | Exp AND Exp                                                           { output::printProductionRule(43); $$ = new Exp(dynamic_cast<Exp*>($1), $2, dynamic_cast<Exp*>($3), false); }
+    | Exp OR Exp                                                            { output::printProductionRule(44); $$ = new Exp(dynamic_cast<Exp*>($1), $2, dynamic_cast<Exp*>($3), false); }
+    | Exp EQ_RELOP Exp                                                      { output::printProductionRule(45); $$ = new Exp(dynamic_cast<Exp*>($1), $2, dynamic_cast<Exp*>($3), true); }
+    | Exp RELOP Exp                                                         { output::printProductionRule(45); $$ = new Exp(dynamic_cast<Exp*>($1), $2, dynamic_cast<Exp*>($3), true); }
+    | LPAREN Type RPAREN Exp                                                { output::printProductionRule(46); $$ = new Exp(dynamic_cast<Type*>($2), dynamic_cast<Exp*>($4)); }
 
 %%
 
