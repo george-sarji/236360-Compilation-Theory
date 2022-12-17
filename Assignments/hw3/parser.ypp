@@ -58,8 +58,8 @@ Formals:                                                                    { ou
 FormalsList: FormalDecl                                                     { output::printProductionRule(9); }
     | FormalDecl COMMA FormalsList                                          { output::printProductionRule(10); }
 FormalDecl: Type ID                                                         { output::printProductionRule(11); }
-Statements: Statement                                                       { output::printProductionRule(12); }
-    | Statements Statement                                                  { output::printProductionRule(13); }
+Statements: Statement                                                       { output::printProductionRule(12); $$ = new Statements(dynamic_cast<Statement*>($1)); }
+    | Statements Statement                                                  { output::printProductionRule(13); $$ = new Statements(dynamic_cast<Statements*>($1), dynamic_cast<Statement*>($2)); }
 Statement: LBRACE Statements RBRACE                                         { output::printProductionRule(14); }
     | Type ID SC                                                            { output::printProductionRule(15); $$ = new Statement(dynamic_cast<Type*>($1), $2); }
     | Type ID ASSIGN Exp SC                                                 { output::printProductionRule(16); $$ = new Statement(dynamic_cast<Type*>($1), $2, dynamic_cast<Exp*>($4)); }
