@@ -2,6 +2,7 @@
 #define SEMANTICS_H_
 
 #include "SymbolTable.h"
+#define YYSTYPE Node *
 
 class Node
 {
