@@ -266,6 +266,21 @@ Statement::Statement(Exp *exp)
     // TODO: Check if we are returning the correct type for the current scope.
 }
 
+Statement::Statement(Exp *exp, Statement *statement)
+{
+    // TODO: Add
+}
+
+Statement::Statement(Exp* exp, Statement* statement1, Statement* statement2)
+{
+    // TODO: Add
+}
+
+Statement::Statement(Node* node)
+{
+    // TODO: Add
+}
+
 Statements::Statements(Statement *statement)
 {
     statements.insert(statements.begin(), statement);
