@@ -76,9 +76,9 @@ Call: ID LPAREN ExpList RPAREN                                              { ou
     | ID LPAREN RPAREN                                                      { output::printProductionRule(27); }
 ExpList: Exp                                                                { output::printProductionRule(28); }
     | Exp COMMA ExpList                                                     { output::printProductionRule(29); }
-Type: INT                                                                   { output::printProductionRule(30); }
-    | BYTE                                                                  { output::printProductionRule(31); }
-    | BOOL                                                                  { output::printProductionRule(32); }
+Type: INT                                                                   { output::printProductionRule(30); $$ = new Type($1); }
+    | BYTE                                                                  { output::printProductionRule(31); $$ = new Type($1); }
+    | BOOL                                                                  { output::printProductionRule(32); $$ = new Type($1); }
 Exp: LPAREN Exp RPAREN                                                      { output::printProductionRule(33); $$ = new Exp(dynamic_cast<Exp*>($2)); }
     | Exp ADD_BINOP Exp                                                     { output::printProductionRule(34); $$ = new Exp(dynamic_cast<Exp*>($1), $2, dynamic_cast<Exp*>($3), false); }
     | Exp BINOP Exp                                                         { output::printProductionRule(34); $$ = new Exp(dynamic_cast<Exp*>($1), $2, dynamic_cast<Exp*>($3), false); }
