@@ -53,8 +53,8 @@ Funcs:                                                                      { ou
 FuncDecl: RetType ID LPAREN Formals RPAREN LBRACE Statements RBRACE         { output::printProductionRule(4); }
 RetType: Type                                                               { output::printProductionRule(5); }
     | VOID                                                                  { output::printProductionRule(6); }
-Formals:                                                                    { output::printProductionRule(7); }
-    | FormalsList                                                           { output::printProductionRule(8); }
+Formals:                                                                    { output::printProductionRule(7); $$ = new Formals(); }
+    | FormalsList                                                           { output::printProductionRule(8); $$ = new Formals(dynamic_cast<FormalsList*>($1)); }
 FormalsList: FormalDecl                                                     { output::printProductionRule(9); $$ = new FormalsList(dynamic_cast<FormalDecl*>($1)); }
     | FormalDecl COMMA FormalsList                                          { output::printProductionRule(10); $$ = new FormalsList(dynamic_cast<FormalDecl*>($1), dynamic_cast<FormalsList*>($3)); }
 FormalDecl: Type ID                                                         { output::printProductionRule(11); $$ = new FormalDecl(dynamic_cast<Type*>($1), $2); }
