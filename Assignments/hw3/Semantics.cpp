@@ -342,3 +342,16 @@ Call::Call(Node *id)
     value = decl->type.back();
     // TODO: Check what else we need here.
 }
+
+FuncDecl::FuncDecl(RetType *type, Node *id, Formals *formals, Statements *statements)
+{
+    // Check if the value was defined before.
+    if (table->isDeclared(id->value))
+    {
+        // We have the function defined before. Exit.
+        output::errorDef(yylineno, id->value);
+        exit(0);
+    }
+    // We have a valid identifier.
+    // Let's start preparing the new symbol.
+}
