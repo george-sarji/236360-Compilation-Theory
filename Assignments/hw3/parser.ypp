@@ -74,8 +74,8 @@ Statement: LBRACE Statements RBRACE                                         { ou
     | CONTINUE SC                                                           { output::printProductionRule(25); }
 Call: ID LPAREN ExpList RPAREN                                              { output::printProductionRule(26); }
     | ID LPAREN RPAREN                                                      { output::printProductionRule(27); }
-ExpList: Exp                                                                { output::printProductionRule(28); }
-    | Exp COMMA ExpList                                                     { output::printProductionRule(29); }
+ExpList: Exp                                                                { output::printProductionRule(28); $$ = new ExpList(dynamic_cast<Exp*>($1)); }
+    | Exp COMMA ExpList                                                     { output::printProductionRule(29); $$ = new ExpList(dynamic_cast<Exp*>($1), dynamic_cast<ExpList*>($3)); }
 Type: INT                                                                   { output::printProductionRule(30); $$ = new Type($1); }
     | BYTE                                                                  { output::printProductionRule(31); $$ = new Type($1); }
     | BOOL                                                                  { output::printProductionRule(32); $$ = new Type($1); }
