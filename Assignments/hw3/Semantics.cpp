@@ -257,8 +257,8 @@ Statement::Statement(Node *id, Exp *exp)
 
 Statement::Statement(Call *call)
 {
-    // Not much to do here.
-    // TODO: Add return value type check and into statement
+    // Not much to do here. Add the value of call.
+    value = call->value;
 }
 
 Statement::Statement(Exp *exp)
