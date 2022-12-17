@@ -61,17 +61,17 @@ FormalDecl: Type ID                                                         { ou
 Statements: Statement                                                       { output::printProductionRule(12); }
     | Statements Statement                                                  { output::printProductionRule(13); }
 Statement: LBRACE Statements RBRACE                                         { output::printProductionRule(14); }
-    | Type ID SC                                                            { output::printProductionRule(15); }
-    | Type ID ASSIGN Exp SC                                                 { output::printProductionRule(16); }
-    | ID ASSIGN Exp SC                                                      { output::printProductionRule(17); }
-    | Call SC                                                               { output::printProductionRule(18); }
-    | RETURN SC                                                             { output::printProductionRule(19); }
-    | RETURN Exp SC                                                         { output::printProductionRule(20); }
-    | IF LPAREN Exp RPAREN Statement %prec IF                               { output::printProductionRule(21); }
-    | IF LPAREN Exp RPAREN Statement ELSE Statement                         { output::printProductionRule(22); }
-    | WHILE LPAREN Exp RPAREN Statement                                     { output::printProductionRule(23); }
-    | BREAK SC                                                              { output::printProductionRule(24); }
-    | CONTINUE SC                                                           { output::printProductionRule(25); }
+    | Type ID SC                                                            { output::printProductionRule(15); $$ = new Statement(dynamic_cast<Type*>($1), $2); }
+    | Type ID ASSIGN Exp SC                                                 { output::printProductionRule(16); $$ = new Statement(dynamic_cast<Type*>($1), $2, dynamic_cast<Exp*>($4)); }
+    | ID ASSIGN Exp SC                                                      { output::printProductionRule(17); $$ = new Statement($1, dynamic_cast<Exp*>($3)); }
+    | Call SC                                                               { output::printProductionRule(18); $$ = new Statement(dynamic_cast<Call*>($1)); }
+    | RETURN SC                                                             { output::printProductionRule(19); $$ = new Statement($1); }
+    | RETURN Exp SC                                                         { output::printProductionRule(20); $$ = new Statement(dynamic_cast<Exp*>($2)); }
+    | IF LPAREN Exp RPAREN Statement %prec IF                               { output::printProductionRule(21); $$ = new Statement(dynamic_cast<Exp*>($3), dynamic_cast<Statement*>($5)); }
+    | IF LPAREN Exp RPAREN Statement ELSE Statement                         { output::printProductionRule(22); $$ = new Statement(dynamic_cast<Exp*>($3), dynamic_cast<Statement*>($5), dynamic_cast<Statement*>($7)); }
+    | WHILE LPAREN Exp RPAREN Statement                                     { output::printProductionRule(23); $$ = new Statement(dynamic_cast<Exp*>($3), dynamic_cast<Statement*>($5)); }
+    | BREAK SC                                                              { output::printProductionRule(24); $$ = new Statement($1); }
+    | CONTINUE SC                                                           { output::printProductionRule(25); $$ = new Statement($1); }
 Call: ID LPAREN ExpList RPAREN                                              { output::printProductionRule(26); $$ = new Call($1, dynamic_cast<ExpList*>($3)); }
     | ID LPAREN RPAREN                                                      { output::printProductionRule(27); $$ = new Call($1); }
 ExpList: Exp                                                                { output::printProductionRule(28); $$ = new ExpList(dynamic_cast<Exp*>($1)); }
