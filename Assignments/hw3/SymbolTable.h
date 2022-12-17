@@ -25,27 +25,33 @@ private:
     vector<TableRow *> entries;
 
 public:
-    void addRow(string name, string type);
-
-    bool isDefined(string symName);
+    void addRow(string name, string type, int offset);
+    void addFuncRow(string name, vector<string> types, int offset);
+    bool isDefined(string symName, bool funcSearch);
 };
 
 class SymbolTable
 {
+    private:
+    bool isDefined(string symName, bool funcSearch);
+
+
 public:
     SymbolTable() = default;
 
     void addScope();
     void dropScope();
 
-    bool isDefined(string symName);
+    bool isDefinedVariable(string symName);
+    bool isDefinedFunc(string symName);
     void addNewSymbol(string name, string type);
-    void addNewFunction();
+    void addNewFunction(string name, vector<string> types);
     bool isInScope(string scopeName);
     TableRow *getSymbol(string symName);
 
 private:
-    vector<ScopeTable* > scopes;
+    vector<ScopeTable *> scopes;
+    vector<int> offsets;
 };
 
 #endif
