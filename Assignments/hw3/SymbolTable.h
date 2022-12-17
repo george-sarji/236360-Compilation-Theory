@@ -30,6 +30,8 @@ public:
     bool isDefined(string symName, bool funcSearch);
     TableRow *getSymbol(string symName);
     void closeAsScope();
+
+    ScopeTable() = default;
 };
 
 class SymbolTable
