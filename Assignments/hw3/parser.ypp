@@ -51,8 +51,8 @@ Program: Funcs                                                              { ou
 Funcs:                                                                      { output::printProductionRule(2); }
     | FuncDecl Funcs                                                        { output::printProductionRule(3); }
 FuncDecl: RetType ID LPAREN Formals RPAREN LBRACE Statements RBRACE         { output::printProductionRule(4); }
-RetType: Type                                                               { output::printProductionRule(5); }
-    | VOID                                                                  { output::printProductionRule(6); }
+RetType: Type                                                               { output::printProductionRule(5); $$ = new RetType($1); }
+    | VOID                                                                  { output::printProductionRule(6); $$ = new RetType($1); }
 Formals:                                                                    { output::printProductionRule(7); $$ = new Formals(); }
     | FormalsList                                                           { output::printProductionRule(8); $$ = new Formals(dynamic_cast<FormalsList*>($1)); }
 FormalsList: FormalDecl                                                     { output::printProductionRule(9); $$ = new FormalsList(dynamic_cast<FormalDecl*>($1)); }
