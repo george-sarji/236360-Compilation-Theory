@@ -28,6 +28,7 @@ public:
     void addRow(string name, string type, int offset);
     void addFuncRow(string name, vector<string> types, int offset);
     bool isDefined(string symName, bool funcSearch);
+    void closeAsScope();
 };
 
 class SymbolTable
