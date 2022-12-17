@@ -2,7 +2,6 @@
 #define SEMANTICS_H_
 
 #include "SymbolTable.h"
-#define YYSTYPE Node *
 
 class Node
 {
@@ -15,6 +14,8 @@ public:
 
     virtual ~Node() = default;
 };
+
+#define YYSTYPE Node*
 
 class Type : public Node
 {
