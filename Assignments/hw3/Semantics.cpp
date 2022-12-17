@@ -279,3 +279,66 @@ Statements::Statements(Statements *statements, Statement *statement)
     this->statements.push_back(statement);
 }
 
+Call::Call(Node *id, ExpList *expList)
+{
+    // We need to first check if ID is a defined function.
+    if (!table->isDefinedFunc(id->value))
+    {
+        // Throw undefined function.
+        output::errorUndefFunc(yylineno, id->value);
+        exit(0);
+    }
+    // Carry on, its a valid function.
+    TableRow *functionDeclaration = table->getSymbol(id->value);
+    // Get the types.
+    vector<string> types = vector<string>(functionDeclaration->type);
+    string returnType = types.back();
+    // Pop the back (ret type.)
+    types.pop_back();
+    // Let's check if we have the same number of arguments.
+    if (expList->expressions.size() != types.size())
+    {
+        // Mismatch in the number of arguments
+        output::errorPrototypeMismatch(yylineno, id->value, types);
+        exit(0);
+    }
+    // Let's go over the types one by one.
+    vector<Exp *> expressions = expList->expressions;
+    for (int i = 0; i < types.size(); i++)
+    {
+        // Check the current expression with the current type.
+        if (expressions[i]->type != types[i])
+        {
+            // We have a mismatch in arguments.
+            output::errorPrototypeMismatch(yylineno, id->value, types);
+            exit(0);
+        }
+    }
+    // We have a valid call.
+    // Add the return value as the call value.
+    value = returnType;
+    // TODO: Check what else we need here.
+}
+
+Call::Call(Node *id)
+{
+    // Check if the function is declared.
+    if (!table->isDefinedFunc(id->value))
+    {
+        output::errorUndefFunc(yylineno, id->value);
+        exit(0);
+    }
+    // Check if the function has no arguments.
+    TableRow *decl = table->getSymbol(id->value);
+    vector<string> emptyTypes = vector<string>();
+    if (decl->type.size() - 1 != 0)
+    {
+        // We have a mismatch in arguments.
+        output::errorPrototypeMismatch(yylineno, id->value, emptyTypes);
+        exit(0);
+    }
+    // We have a valid call.
+    // Set the type as the call return.
+    value = decl->type.back();
+    // TODO: Check what else we need here.
+}
