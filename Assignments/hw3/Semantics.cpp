@@ -196,21 +196,20 @@ ExpList::ExpList(Exp *exp, ExpList *list)
 Statement::Statement(Type *type, Node *id)
 {
     // Check if we have an id defined.
-    if (table->isDefinedVariable(id->value))
+    if (table->isDeclared(id->value))
     {
         output::errorDef(yylineno, id->value);
         exit(0);
     }
     // We don't have that ID defined. Let's add it.
     value = type->value;
-    // TODO: Add the symbol parameters.
-    table->addNewSymbol();
+    table->addNewSymbol(id->value, type->value);
 }
 
 Statement::Statement(Type *type, Node *id, Exp *exp)
 {
     // Check if we have such a defined ID.
-    if (table->isDefinedVariable(id->value))
+    if (table->isDeclared(id->value))
     {
         output::errorDef(yylineno, id->value);
         exit(0);
@@ -220,8 +219,7 @@ Statement::Statement(Type *type, Node *id, Exp *exp)
     if (type->value == exp->value || (type->value == "INT" && exp->type == "BYTE"))
     {
         // Valid expression. Add to the symbol table.
-        // TODO: Add the symbol parameters.
-        table->addNewSymbol();
+        table->addNewSymbol(id->value, type->value);
     }
     else
     {

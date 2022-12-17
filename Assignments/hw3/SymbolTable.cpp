@@ -16,6 +16,21 @@ bool SymbolTable::isDefined(string symbol, bool funcSearch)
     return false;
 }
 
+bool SymbolTable::isDeclared(string symbol)
+{
+    // We need to go over all of the scopes and check in each scope.
+    // We will iterate in reverse, as the top scope is pushed to the back.
+    for (auto it = scopes.rbegin(); it != scopes.rend(); ++it)
+    {
+        // Check in the current scope.
+        if ((*it)->isDefined(symbol, true) || (*it)->isDefined(symbol, false))
+            return true;
+    }
+    // We haven't found it in any of the scopes.
+    // Exit.
+    return false;
+}
+
 bool SymbolTable::isDefinedFunc(string symbol)
 {
     return isDefined(symbol, true);

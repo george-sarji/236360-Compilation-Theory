@@ -45,6 +45,7 @@ public:
 
     bool isDefinedVariable(string symName);
     bool isDefinedFunc(string symName);
+    bool isDeclared(string symName);
     void addNewSymbol(string name, string type);
     void addNewFunction(string name, vector<string> types);
     bool isInScope(string scopeName);
