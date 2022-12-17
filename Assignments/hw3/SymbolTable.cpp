@@ -4,10 +4,11 @@
 bool SymbolTable::isDefined(string symbol, bool funcSearch)
 {
     // We need to go over all of the scopes and check in each scope.
-    for (ScopeTable *scope : scopes)
+    // We will iterate in reverse, as the top scope is pushed to the back.
+    for (auto it = scopes.rbegin(); it != scopes.rend(); ++it)
     {
         // Check in the current scope.
-        if (scope->isDefined(symbol, funcSearch))
+        if ((*it)->isDefined(symbol, funcSearch))
             return true;
     }
     // We haven't found it in any of the scopes.
@@ -43,7 +44,7 @@ bool ScopeTable::isDefined(string symName, bool funcSearch)
 void SymbolTable::addNewSymbol(string name, string type)
 {
     // Let's go into the top scope (beginning of the vector.)
-    ScopeTable *currentScope = scopes.front();
+    ScopeTable *currentScope = scopes.back();
     // Get the last offset.
     int newOffset = offsets.back();
     offsets.push_back(newOffset + 1);
@@ -54,7 +55,7 @@ void SymbolTable::addNewSymbol(string name, string type)
 void SymbolTable::addNewFunction(string name, vector<string> types)
 {
     // Get the top scope.
-    ScopeTable *topScope = scopes.front();
+    ScopeTable *topScope = scopes.back();
     // Get the last offset.
     int offset = offsets.back()++;
 
@@ -83,7 +84,7 @@ void SymbolTable::addScope()
     // Create a new scope table.
     ScopeTable *table = new ScopeTable();
     // Push the scope table in the beginning of the scopes vector.
-    scopes.insert(scopes.begin(), table);
+    scopes.push_back(table);
 }
 
 void SymbolTable::dropScope()
@@ -95,7 +96,7 @@ void SymbolTable::dropScope()
     // Close the top scope.
     top->closeAsScope();
     // Remove the scope from the vector.
-    scopes.erase(scopes.begin());
+    scopes.pop_back();
     // Remove the last offset.
     offsets.pop_back();
 }
