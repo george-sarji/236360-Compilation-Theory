@@ -363,9 +363,10 @@ Call::Call(Node *id)
     // TODO: Check what else we need here.
 }
 
-FuncDecl::FuncDecl(RetType *type, Node *id, Formals *formals, Statements *statements)
+FuncDecl::FuncDecl(RetType *type, Node *id, Formals *formals)
 {
     // Check if the value was defined before.
+    Debugger::print("FuncDecl ctor!!!!!!");
     if (table->isDeclared(id->value))
     {
         // We have the function defined before. Exit.

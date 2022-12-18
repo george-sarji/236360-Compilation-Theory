@@ -160,7 +160,7 @@ class FuncDecl : public Node
 {
 public:
     // FuncDecl: RetType ID LPAREN Formals RPAREN LBRACE Statements RBRACE
-    FuncDecl(RetType *type, Node *id, Formals *formals, Statements *statements);
+    FuncDecl(RetType *type, Node *id, Formals *formals);
 };
 
 class Funcs : public Node
