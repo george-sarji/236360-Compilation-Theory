@@ -7,6 +7,7 @@ extern int yylineno;
 extern char *yytext;
 std::shared_ptr<SymbolTable> table;
 int loopsCount = 0;
+string currentScope = "";
 
 Node::Node(string value) : value()
 {
@@ -354,6 +355,30 @@ Statement::Statement(Node *node)
             output::errorUnexpectedContinue(yylineno);
         exit(0);
     }
+    Debugger::print("Received end of stateemtn");
+}
+
+Statement::Statement()
+{
+    // We need to check the current scope.
+    // Get the top scope.
+    vector<shared_ptr<TableRow>> topScope = table->getTopScope();
+    // Go over the scope.
+    for (auto entry : topScope)
+    {
+        // Check if the name is the same as the current function.
+        if (entry->isFunc && entry->name == currentScope)
+        {
+            // We found it. Do we have a void value?
+            if (entry->type.back() != "VOID")
+            {
+                // Mismatch.
+                output::errorMismatch(yylineno);
+                exit(0);
+            }
+        }
+    }
+    value = "VOID";
 }
 
 Statements::Statements(Statement *statement)
@@ -477,6 +502,7 @@ FuncDecl::FuncDecl(RetType *type, Node *id, Formals *formals)
     // Create the new row.
     table->addNewFunction(id->value, types);
     Debugger::print("New function ID: " + id->value);
+    currentScope = value;
 }
 
 void openScope()

@@ -148,6 +148,9 @@ public:
     // Statement: BREAK SC
     // Statement: CONTINUE SC
     Statement(Node *node);
+
+    // Statement: RETURN SC
+    explicit Statement();
 };
 
 class Statements : public Node
