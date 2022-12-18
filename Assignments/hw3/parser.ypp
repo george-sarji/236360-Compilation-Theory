@@ -60,7 +60,7 @@ FormalsList: FormalDecl                                                     { ou
 FormalDecl: Type ID                                                         { output::printProductionRule(11); $$ = new FormalDecl(dynamic_cast<Type*>($1), $2); }
 Statements: Statement                                                       { output::printProductionRule(12); $$ = new Statements(dynamic_cast<Statement*>($1)); }
     | Statements Statement                                                  { output::printProductionRule(13); $$ = new Statements(dynamic_cast<Statements*>($1), dynamic_cast<Statement*>($2)); }
-Statement: LBRACE OpenScope Statements CloseScope RBRACE                                         { output::printProductionRule(14); }
+Statement: LBRACE OpenScope Statements CloseScope RBRACE                                         { output::printProductionRule(14); $$ = new Statement(dynamic_cast<Statements*>($3)); }
     | Type ID SC                                                            { output::printProductionRule(15); $$ = new Statement(dynamic_cast<Type*>($1), $2); }
     | Type ID ASSIGN Exp SC                                                 { output::printProductionRule(16); $$ = new Statement(dynamic_cast<Type*>($1), $2, dynamic_cast<Exp*>($4)); }
     | ID ASSIGN Exp SC                                                      { output::printProductionRule(17); $$ = new Statement($1, dynamic_cast<Exp*>($3)); }

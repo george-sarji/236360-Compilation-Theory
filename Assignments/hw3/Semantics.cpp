@@ -402,6 +402,9 @@ Statement::Statement()
     value = "VOID";
 }
 
+Statement::Statement(Statements* statements)
+{}
+
 Statements::Statements(Statement *statement)
 {
     statements.insert(statements.begin(), statement);

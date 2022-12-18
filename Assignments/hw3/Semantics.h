@@ -120,6 +120,9 @@ public:
     explicit Call(Node *id);
 };
 
+// Shell due to circular dependency
+class Statements;
+
 class Statement : public Node
 {
 public:
@@ -147,10 +150,13 @@ public:
 
     // Statement: BREAK SC
     // Statement: CONTINUE SC
-    Statement(Node *node);
+    explicit Statement(Node *node);
 
     // Statement: RETURN SC
     explicit Statement();
+
+    // Statement: LBRACE Statements RBRACE  
+    explicit Statement(Statements* statements);
 };
 
 class Statements : public Node
