@@ -302,7 +302,7 @@ Statement::Statement(Node *id, Exp *exp)
     shared_ptr<TableRow> matchingRow = table->getSymbol(id->value);
     string symbolType = matchingRow->type.back();
     Debugger::print("Received statement with node " + id->value + " and exp " + exp->type + " while node type is " + symbolType);
-    if (symbolType == exp->type || ((symbolType == "INT" || symbolType == "BYTE") && (exp->type == "INT" || exp->type == "BYTE")))
+    if (symbolType == exp->type || (symbolType == "INT" && exp->type == "BYTE"))
     {
         // We have a valid cast.
         // We need to update the symbol.
