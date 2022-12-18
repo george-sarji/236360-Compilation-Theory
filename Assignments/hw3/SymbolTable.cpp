@@ -66,8 +66,8 @@ void SymbolTable::addNewSymbol(string name, string type)
     // Let's go into the top scope (beginning of the vector.)
     shared_ptr<ScopeTable> currentScope = scopes.back();
     // Get the last offset.
-    int newOffset = offsets.back();
-    offsets.push_back(newOffset + 1);
+    int newOffset = offsets.back()++;
+    Debugger::print("Adding new symbol " + name + " of type " + type + " with offset " + to_string(newOffset));
     // Let's add a new row into the scope table.
     currentScope->addRow(name, type, newOffset);
 }
@@ -104,11 +104,13 @@ void SymbolTable::addScope()
     shared_ptr<ScopeTable> table = std::make_shared<ScopeTable>();
     // Push the scope table in the beginning of the scopes vector.
     scopes.push_back(table);
+    Debugger::print("Base offset: " + to_string(offsets.back()));
 }
 
 void SymbolTable::dropScope()
 {
-    Debugger::print("Dropping scope from symbol table");
+    Debugger::print("Dropping scope from symbol table----------------------");
+    Debugger::print("We have " + to_string(scopes.size()) + " scopes open!");
     // Print scope ending.
     output::endScope();
     // Get the top scope.
