@@ -337,6 +337,12 @@ Statement::Statement(Exp *exp)
         Debugger::print("Current row: " + row->name);
         if (row->isFunc && row->name == currentScope)
         {
+            if (row->type.back() == "VOID")
+            {
+                // This type of return is not allowed for void functions.
+                output::errorMismatch(yylineno);
+                exit(0);
+            }
             if (row->type.back() != exp->type && !(row->type.back() == "INT" && exp->type == "BYTE"))
             {
                 output::errorMismatch(yylineno);
@@ -465,7 +471,8 @@ Call::Call(Node *id, ExpList *expList)
         if (expressions[i]->type != types[i])
         {
             // Special case: we can transform to compatible type.
-            if(expressions[i]->type == "BYTE" && types[i] == "INT") continue;
+            if (expressions[i]->type == "BYTE" && types[i] == "INT")
+                continue;
             // We have a mismatch in arguments.
             output::errorPrototypeMismatch(yylineno, id->value, types);
             exit(0);
@@ -615,11 +622,6 @@ void exitProgram(int yychar, int eof)
         {
             // We have a valid main.
             isMain = true;
-        }
-        else if(tableRow->isFunc && tableRow->name == "main")
-        {
-            // We have a duplicate main?
-            // We're supposed to print an error here.
         }
     }
     // Do we have a valid main?
