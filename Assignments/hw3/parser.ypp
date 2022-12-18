@@ -95,6 +95,7 @@ Exp: LPAREN Exp RPAREN                                                      { ou
     | Exp EQ_RELOP Exp                                                      { output::printProductionRule(45); $$ = new Exp(dynamic_cast<Exp*>($1), $2, dynamic_cast<Exp*>($3), true); }
     | Exp RELOP Exp                                                         { output::printProductionRule(45); $$ = new Exp(dynamic_cast<Exp*>($1), $2, dynamic_cast<Exp*>($3), true); }
     | LPAREN Type RPAREN Exp                                                { output::printProductionRule(46); $$ = new Exp(dynamic_cast<Type*>($2), dynamic_cast<Exp*>($4)); }
+    | Exp IF LPAREN Exp RPAREN ELSE Exp                                     { output::printProductionRule(99); $$ = new Exp(dynamic_cast<Exp*>($1), dynamic_cast<Exp*>($4), dynamic_cast<Exp*>($7)); }
 
 OpenScope: { openScope(); }
 CloseScope: { closeScope(); }
