@@ -5,8 +5,7 @@
 
 extern int yylineno;
 extern char *yytext;
-
-SymbolTable *table = new SymbolTable();
+std::shared_ptr<SymbolTable> table;
 
 Node::Node(string value) : value()
 {
@@ -387,4 +386,11 @@ void closeScope()
 {
     Debugger::print("Closing current scope");
     table->dropScope();
+}
+
+Program::Program() : Node("Program")
+{
+    // Create the symbol table.
+    Debugger::print("Making symbol table");
+    table = make_shared<SymbolTable>();
 }
