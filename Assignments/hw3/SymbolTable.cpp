@@ -75,11 +75,9 @@ void SymbolTable::addNewSymbol(string name, string type)
 void SymbolTable::addNewFunction(string name, vector<string> types)
 {
     // Get the top scope.
-    shared_ptr<ScopeTable> topScope = scopes.back();
-    // Get the last offset.
-    int offset = offsets.back()++;
+    shared_ptr<ScopeTable> topScope = scopes.front();
 
-    topScope->addFuncRow(name, types, offset);
+    topScope->addFuncRow(name, types, 0);
 }
 
 void ScopeTable::addRow(string name, string type, int offset)
@@ -114,7 +112,7 @@ void SymbolTable::dropScope()
     // Print scope ending.
     output::endScope();
     // Get the top scope.
-    shared_ptr<ScopeTable> top = scopes.front();
+    shared_ptr<ScopeTable> top = scopes.back();
     // Close the top scope.
     top->closeAsScope();
     // Remove the scope from the vector.
