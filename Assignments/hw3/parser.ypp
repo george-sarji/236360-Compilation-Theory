@@ -50,7 +50,7 @@
 Program: {$$ = new Program(); } Funcs                                                              { output::printProductionRule(1); }
 Funcs:                                                                      { output::printProductionRule(2); }
     | FuncDecl Funcs                                                        { output::printProductionRule(3); }
-FuncDecl: RetType ID LPAREN Formals RPAREN LBRACE OpenScope Statements CloseScope RBRACE         { output::printProductionRule(4); }
+FuncDecl: RetType ID LPAREN Formals RPAREN { $$ = new FuncDecl(dynamic_cast<RetType*>($1), $2, dynamic_cast<Formals*>($4)); } LBRACE OpenScope {backfillFunctionArguments(dynamic_cast<Formals*>($4)); } Statements CloseScope RBRACE         { output::printProductionRule(4); }
 RetType: Type                                                               { output::printProductionRule(5); $$ = new RetType($1); }
     | VOID                                                                  { output::printProductionRule(6); $$ = new RetType($1); }
 Formals:                                                                    { output::printProductionRule(7); $$ = new Formals(); }
