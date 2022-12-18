@@ -69,7 +69,7 @@ Statement: LBRACE OpenScope Statements CloseScope RBRACE                        
     | RETURN Exp SC                                                         { output::printProductionRule(20); $$ = new Statement(dynamic_cast<Exp*>($2)); }
     | IF LPAREN ExpIf RPAREN OpenScope Statement %prec IF                               { output::printProductionRule(21); $$ = new Statement(dynamic_cast<Exp*>($3), dynamic_cast<Statement*>($6)); closeScope(); }
     | IF LPAREN ExpIf RPAREN OpenScope Statement ELSE {closeScope(); } OpenScope Statement CloseScope                         { output::printProductionRule(22); $$ = new Statement(dynamic_cast<Exp*>($3), dynamic_cast<Statement*>($6), dynamic_cast<Statement*>($8)); }
-    | WHILE LPAREN Exp RPAREN OpenScope { enterLoop(); } Statement { exitLoop(); } CloseScope                                     { output::printProductionRule(23); $$ = new Statement(dynamic_cast<Exp*>($3), dynamic_cast<Statement*>($7)); }
+    | WHILE LPAREN ExpIf RPAREN OpenScope { enterLoop(); } Statement { exitLoop(); } CloseScope                                     { output::printProductionRule(23); $$ = new Statement(dynamic_cast<Exp*>($3), dynamic_cast<Statement*>($7)); }
     | BREAK SC                                                              { output::printProductionRule(24); $$ = new Statement($1); }
     | CONTINUE SC                                                           { output::printProductionRule(25); $$ = new Statement($1); }
 Call: ID LPAREN ExpList RPAREN                                              { output::printProductionRule(26); $$ = new Call($1, dynamic_cast<ExpList*>($3)); }
