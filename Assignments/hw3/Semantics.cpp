@@ -367,10 +367,12 @@ Statement::Statement(Node *node)
     // Check if we're inside a loop.
     if (loopsCount <= 0)
     {
+        Debugger::print("No loops found, entered statement.");
+        Debugger::print("Node's value: " + node->value);
         // Not a valid situation.
-        if (node->value == "BREAK")
+        if (node->value == "break")
             output::errorUnexpectedBreak(yylineno);
-        else if (node->value == "CONTINUE")
+        else if (node->value == "continue")
             output::errorUnexpectedContinue(yylineno);
         exit(0);
     }
