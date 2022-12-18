@@ -433,6 +433,7 @@ Statements::Statements(Statements *statements, Statement *statement)
 Call::Call(Node *id, ExpList *expList)
 {
     // We need to first check if ID is a defined function.
+    Debugger::print("Entered call for " + id->value);
     if (!table->isDefinedFunc(id->value))
     {
         // Throw undefined function.
@@ -473,6 +474,7 @@ Call::Call(Node *id, ExpList *expList)
 
 Call::Call(Node *id)
 {
+    Debugger::print("Entered call for " + id->value);
     // Check if the function is declared.
     if (!table->isDefinedFunc(id->value))
     {
@@ -481,11 +483,13 @@ Call::Call(Node *id)
     }
     // Check if the function has no arguments.
     shared_ptr<TableRow> decl = table->getSymbol(id->value);
-    vector<string> emptyTypes = vector<string>();
+    // Get the requested arguments.
+    vector<string> functionArguments = vector<string>(decl->type);
+    functionArguments.pop_back();
     if (decl->type.size() - 1 != 0)
     {
         // We have a mismatch in arguments.
-        output::errorPrototypeMismatch(yylineno, id->value, emptyTypes);
+        output::errorPrototypeMismatch(yylineno, id->value, functionArguments);
         exit(0);
     }
     // We have a valid call.
