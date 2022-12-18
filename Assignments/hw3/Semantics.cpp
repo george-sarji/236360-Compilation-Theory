@@ -10,7 +10,6 @@ int loopsCount = 0;
 
 Node::Node(string value) : value()
 {
-    Debugger::print("Node ctor with value " + value);
     // Check for known types.
     if (value == "void")
         this->value = "VOID";
@@ -78,7 +77,7 @@ Exp::Exp(Exp *left, Node *op, Exp *right, bool isRelop)
         }
     }
     // Not a boolean operation. Are we comparing numbers?
-    if ((left->type == "INT" || left->type == "BYTE") && (right->type == "INT" || left->type == "BYTE"))
+    if ((left->type == "INT" || left->type == "BYTE") && (right->type == "INT" || right->type == "BYTE"))
     {
         // We are comparing numbers.
         // What is the op type? Are we doing a relop?
@@ -112,7 +111,6 @@ Exp::Exp(Exp *left, Node *op, Exp *right, bool isRelop)
 
 Exp::Exp(Node *id)
 {
-    Debugger::print("Entered exp node ctor");
     // We need to check if the given ID is a valid ID.
     if (!table->isDefinedVariable(id->value))
     {
@@ -156,7 +154,10 @@ Exp::Exp(Node *term, string expType) : Node(term->value)
         // Check the bool value.
         booleanValue = term->value == "true";
     }
-    // TODO: Check if we have to throw a mismatch error here
+    if (expType == "STRING")
+    {
+        type = "STRING";
+    }
 }
 
 Exp::Exp(Node *notNode, Exp *exp)
@@ -220,9 +221,11 @@ Statement::Statement(Type *type, Node *id, Exp *exp)
     }
     // We don't have such a defined symbol.
     // Let's check if the types are allowed.
-    if (type->value == exp->value || (type->value == "INT" && exp->type == "BYTE"))
+    Debugger::print("Entered statement with type " + type->value + " and expression type " + exp->type);
+    if (type->value == exp->type || (type->value == "INT" && exp->type == "BYTE"))
     {
         // Valid expression. Add to the symbol table.
+        Debugger::print("Adding new symbol after types matched.");
         table->addNewSymbol(id->value, type->value);
     }
     else
@@ -388,7 +391,6 @@ Call::Call(Node *id)
 FuncDecl::FuncDecl(RetType *type, Node *id, Formals *formals)
 {
     // Check if the value was defined before.
-    Debugger::print("FuncDecl ctor!!!!!!");
     if (table->isDeclared(id->value))
     {
         // We have the function defined before. Exit.
@@ -426,10 +428,8 @@ FuncDecl::FuncDecl(RetType *type, Node *id, Formals *formals)
         types.push_back(formal->type);
     }
     // Add the return type at the back.
-    Debugger::print("Adding types");
     types.push_back(type->value);
     // Create the new row.
-    Debugger::print("Adding new function to symbol table!");
     table->addNewFunction(id->value, types);
     Debugger::print("New function ID: " + id->value);
 }
@@ -449,8 +449,11 @@ void closeScope()
 Program::Program() : Node("Program")
 {
     // Create the symbol table.
-    Debugger::print("Making symbol table");
     table = make_shared<SymbolTable>();
+    // Add the printing functions.
+    Debugger::print("Start of program - Adding print functions");
+    table->addNewFunction("print", {"STRING", "VOID"});
+    table->addNewFunction("printi", {"INT", "VOID"});
 }
 
 void enterLoop()
