@@ -314,8 +314,27 @@ Statement::Statement(Call *call) : Node(call->value)
 Statement::Statement(Exp *exp)
 {
     // This ctor will handle the return exp part.
+    Debugger::print("Entered return validations-------------------");
     // We need to check if the returned expression matches with the current scope.
     // TODO: Check if we are returning the correct type for the current scope.
+    // Get the top scope.
+    vector<shared_ptr<TableRow>> topScope = table->getTopScope();
+    Debugger::print("Current scope is " + currentScope);
+    // Go over them and get the current function.
+    for (auto row : topScope)
+    {
+        Debugger::print("Current row: " + row->name);
+        if (row->isFunc && row->name == currentScope)
+        {
+            if (row->type.back() != exp->type)
+            {
+                output::errorMismatch(yylineno);
+                exit(0);
+            }
+            // We have a valid scope.
+            value = "VOID";
+        }
+    }
 }
 
 Statement::Statement(Exp *exp, Statement *statement)
@@ -502,7 +521,8 @@ FuncDecl::FuncDecl(RetType *type, Node *id, Formals *formals)
     // Create the new row.
     table->addNewFunction(id->value, types);
     Debugger::print("New function ID: " + id->value);
-    currentScope = value;
+    currentScope = id->value;
+    Debugger::print("New current scope: " + currentScope);
 }
 
 void openScope()

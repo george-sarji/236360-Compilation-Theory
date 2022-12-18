@@ -65,7 +65,7 @@ Statement: LBRACE OpenScope Statements CloseScope RBRACE                        
     | Type ID ASSIGN Exp SC                                                 { output::printProductionRule(16); $$ = new Statement(dynamic_cast<Type*>($1), $2, dynamic_cast<Exp*>($4)); }
     | ID ASSIGN Exp SC                                                      { output::printProductionRule(17); $$ = new Statement($1, dynamic_cast<Exp*>($3)); }
     | Call SC                                                               { output::printProductionRule(18); $$ = new Statement(dynamic_cast<Call*>($1)); }
-    | RETURN SC                                                             { output::printProductionRule(19); $$ = new Statement($1); }
+    | RETURN SC                                                             { output::printProductionRule(19); $$ = new Statement(); }
     | RETURN Exp SC                                                         { output::printProductionRule(20); $$ = new Statement(dynamic_cast<Exp*>($2)); }
     | IF LPAREN Exp RPAREN OpenScope Statement %prec IF                               { output::printProductionRule(21); $$ = new Statement(dynamic_cast<Exp*>($3), dynamic_cast<Statement*>($5)); closeScope(); }
     | IF LPAREN Exp RPAREN OpenScope Statement ELSE {closeScope(); } OpenScope Statement CloseScope                         { output::printProductionRule(22); $$ = new Statement(dynamic_cast<Exp*>($3), dynamic_cast<Statement*>($5), dynamic_cast<Statement*>($7)); }
