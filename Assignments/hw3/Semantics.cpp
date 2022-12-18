@@ -249,7 +249,6 @@ Statement::Statement(Node *id, Exp *exp)
     {
         // We have a valid cast.
         // We need to update the symbol.
-        // TODO: Add symbol update
     }
     else
     {
@@ -396,9 +395,43 @@ FuncDecl::FuncDecl(RetType *type, Node *id, Formals *formals)
         output::errorDef(yylineno, id->value);
         exit(0);
     }
-    // We have a valid identifier.
-    // Let's start preparing the new symbol.
-    // TODO: Add to symbol table
+    // We have a valid function identifier.
+    // We need to check if we are overwriting any other variables.
+    for (int i = 0; i < formals->declarations.size(); i++)
+    {
+        FormalDecl *formal = formals->declarations[i];
+        if (table->isDeclared(formal->value) || formal->value == id->value)
+        {
+            // We are overwiting an existing symbol. Throw defined error.
+            output::errorDef(yylineno, formal->value);
+            exit(0);
+        }
+        // Let's check if we have other identifiers that are the same name in the arguments.
+        for (int j = i + 1; j < formals->declarations.size(); j++)
+        {
+            FormalDecl *current = formals->declarations[j];
+            if (current->value == formal->value)
+            {
+                // We have a shadowing in the arguments. Throw error.
+                output::errorDef(yylineno, current->value);
+                exit(0);
+            }
+        }
+    }
+    // We don't have any shadowing. That means we have a valid call.
+    // Let's prepare the types array.
+    vector<string> types;
+    for (auto formal : formals->declarations)
+    {
+        types.push_back(formal->type);
+    }
+    // Add the return type at the back.
+    Debugger::print("Adding types");
+    types.push_back(type->value);
+    // Create the new row.
+    Debugger::print("Adding new function to symbol table!");
+    table->addNewFunction(id->value, types);
+    Debugger::print("New function ID: " + id->value);
 }
 
 void openScope()
@@ -422,10 +455,24 @@ Program::Program() : Node("Program")
 
 void enterLoop()
 {
+    Debugger::print("Entering loop");
     loopsCount++;
 }
 
 void exitLoop()
 {
+    Debugger::print("Exiting loop");
     loopsCount--;
+}
+
+void backfillFunctionArguments(Formals *formals)
+{
+    // Go over the formals.
+    for (int i = 0; i < formals->declarations.size(); i++)
+    {
+        FormalDecl *declaration = formals->declarations[i];
+        // Add the new row.
+        Debugger::print("Adding function argument " + declaration->value + " with type " + declaration->type);
+        table->addNewParameter(declaration->value, declaration->type, -i - 1);
+    }
 }
