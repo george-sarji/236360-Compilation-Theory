@@ -178,7 +178,7 @@ public:
 class Program : public Node
 {
 public:
-    explicit Program(Funcs *funcs);
+    explicit Program();
 };
 
 #endif
