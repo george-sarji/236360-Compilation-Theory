@@ -48,7 +48,7 @@ bool SymbolTable::isDefinedVariable(string symbol)
 
 bool ScopeTable::isDefined(string symName, bool funcSearch)
 {
-    for (TableRow *row : entries)
+    for (auto row : entries)
     {
         if (row->name == symName)
         {
@@ -86,14 +86,14 @@ void ScopeTable::addRow(string name, string type, int offset)
 {
     // Add the row to the beginning.
     // Create a new table row.
-    TableRow *row = new TableRow(name, vector<string>{type}, offset, false);
+    shared_ptr<TableRow> row = std::make_shared<TableRow>(name, vector<string>{type}, offset, false);
     // Add to the vector.
     entries.push_back(row);
 }
 
 void ScopeTable::addFuncRow(string name, vector<string> types, int offset)
 {
-    TableRow *row = new TableRow(name, types, offset, true);
+    shared_ptr<TableRow> row = std::make_shared<TableRow>(name, types, offset, true);
     entries.push_back(row);
 }
 
@@ -146,7 +146,7 @@ void ScopeTable::closeAsScope()
     }
 }
 
-TableRow *ScopeTable::getSymbol(string symName)
+shared_ptr<TableRow> ScopeTable::getSymbol(string symName)
 {
     // Go over the entries and get the first that matches the symbol name.
     for (auto entry : entries)
@@ -157,12 +157,12 @@ TableRow *ScopeTable::getSymbol(string symName)
     return nullptr;
 }
 
-TableRow *SymbolTable::getSymbol(string symName)
+shared_ptr<TableRow> SymbolTable::getSymbol(string symName)
 {
     // Go over the scopes from the top and look for the symbol.
     for (auto scope : scopes)
     {
-        TableRow *returned = scope->getSymbol(symName);
+        shared_ptr<TableRow> returned = scope->getSymbol(symName);
         if (returned != nullptr)
             return returned;
     }
@@ -180,5 +180,4 @@ SymbolTable::SymbolTable()
 ScopeTable::ScopeTable()
 {
     Debugger::print("Scope table init!");
-    entries = vector<TableRow *>();
 }

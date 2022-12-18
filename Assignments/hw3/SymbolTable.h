@@ -22,13 +22,13 @@ public:
 class ScopeTable
 {
 private:
-    vector<TableRow *> entries;
+    vector<shared_ptr<TableRow>> entries;
 
 public:
     void addRow(string name, string type, int offset);
     void addFuncRow(string name, vector<string> types, int offset);
     bool isDefined(string symName, bool funcSearch);
-    TableRow *getSymbol(string symName);
+    shared_ptr<TableRow> getSymbol(string symName);
     void closeAsScope();
 
     ScopeTable();
@@ -49,9 +49,10 @@ public:
     bool isDefinedFunc(string symName);
     bool isDeclared(string symName);
     void addNewSymbol(string name, string type);
+    void addNewParameter(string name, string type, int offset);
     void addNewFunction(string name, vector<string> types);
     bool isInScope(string scopeName);
-    TableRow *getSymbol(string symName);
+    shared_ptr<TableRow> getSymbol(string symName);
 
 private:
     vector<shared_ptr<ScopeTable>> scopes;

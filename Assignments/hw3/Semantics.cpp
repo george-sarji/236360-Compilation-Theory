@@ -122,7 +122,7 @@ Exp::Exp(Node *id)
 
     // We have a valid identifier that is defined in the symbol table.
     // Let's fetch it from the symbol table.
-    TableRow *entryRow = table->getSymbol(id->value);
+    shared_ptr<TableRow> entryRow = table->getSymbol(id->value);
     // Assign the same type and value.
     value = id->value;
     type = entryRow->type.back();
@@ -242,7 +242,7 @@ Statement::Statement(Node *id, Exp *exp)
         exit(0);
     }
     // We now need to check if the expression and the symbol types match.
-    TableRow *matchingRow = table->getSymbol(id->value);
+    shared_ptr<TableRow> matchingRow = table->getSymbol(id->value);
     string symbolType = matchingRow->type.back();
     if (symbolType == exp->type || (symbolType == "INT" && exp->type == "BYTE"))
     {
@@ -309,7 +309,7 @@ Call::Call(Node *id, ExpList *expList)
         exit(0);
     }
     // Carry on, its a valid function.
-    TableRow *functionDeclaration = table->getSymbol(id->value);
+    shared_ptr<TableRow> functionDeclaration = table->getSymbol(id->value);
     // Get the types.
     vector<string> types = vector<string>(functionDeclaration->type);
     string returnType = types.back();
@@ -349,7 +349,7 @@ Call::Call(Node *id)
         exit(0);
     }
     // Check if the function has no arguments.
-    TableRow *decl = table->getSymbol(id->value);
+    shared_ptr<TableRow> decl = table->getSymbol(id->value);
     vector<string> emptyTypes = vector<string>();
     if (decl->type.size() - 1 != 0)
     {
@@ -375,6 +375,7 @@ FuncDecl::FuncDecl(RetType *type, Node *id, Formals *formals)
     }
     // We have a valid identifier.
     // Let's start preparing the new symbol.
+    // TODO: Add to symbol table
 }
 
 void openScope()
