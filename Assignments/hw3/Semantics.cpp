@@ -464,9 +464,8 @@ Call::Call(Node *id, ExpList *expList)
         // Check the current expression with the current type.
         if (expressions[i]->type != types[i])
         {
-            // Special case: printi with byte.
-            if (id->value == "printi" && expressions[i]->type == "BYTE" && types[i] == "INT")
-                continue;
+            // Special case: we can transform to compatible type.
+            if(expressions[i]->type == "BYTE" && types[i] == "INT") continue;
             // We have a mismatch in arguments.
             output::errorPrototypeMismatch(yylineno, id->value, types);
             exit(0);
@@ -616,6 +615,11 @@ void exitProgram(int yychar, int eof)
         {
             // We have a valid main.
             isMain = true;
+        }
+        else if(tableRow->isFunc && tableRow->name == "main")
+        {
+            // We have a duplicate main?
+            // We're supposed to print an error here.
         }
     }
     // Do we have a valid main?
