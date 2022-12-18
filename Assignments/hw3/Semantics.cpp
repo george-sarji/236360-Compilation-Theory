@@ -70,11 +70,11 @@ Exp::Exp(Exp *left, Node *op, Exp *right, bool isRelop)
         // We know for granted the result is a bool.
         type = "BOOL";
         // Let's check if the operation is valid (and/or)
-        if (op->value == "AND")
+        if (op->value == "and")
         {
             booleanValue = left->booleanValue && right->booleanValue;
         }
-        else if (op->value == "OR")
+        else if (op->value == "or")
         {
             booleanValue = left->booleanValue || right->booleanValue;
         }
@@ -87,7 +87,7 @@ Exp::Exp(Exp *left, Node *op, Exp *right, bool isRelop)
         }
     }
     // Not a boolean operation. Are we comparing numbers?
-    if ((left->type == "INT" || left->type == "BYTE") && (right->type == "INT" || right->type == "BYTE"))
+    else if ((left->type == "INT" || left->type == "BYTE") && (right->type == "INT" || right->type == "BYTE"))
     {
         // We are comparing numbers.
         // What is the op type? Are we doing a relop?
