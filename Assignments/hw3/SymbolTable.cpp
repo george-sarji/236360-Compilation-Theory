@@ -64,7 +64,7 @@ bool ScopeTable::isDefined(string symName, bool funcSearch)
 void SymbolTable::addNewSymbol(string name, string type)
 {
     // Let's go into the top scope (beginning of the vector.)
-    ScopeTable *currentScope = scopes.back();
+    shared_ptr<ScopeTable> currentScope = scopes.back();
     // Get the last offset.
     int newOffset = offsets.back();
     offsets.push_back(newOffset + 1);
@@ -75,7 +75,7 @@ void SymbolTable::addNewSymbol(string name, string type)
 void SymbolTable::addNewFunction(string name, vector<string> types)
 {
     // Get the top scope.
-    ScopeTable *topScope = scopes.back();
+    shared_ptr<ScopeTable> topScope = scopes.back();
     // Get the last offset.
     int offset = offsets.back()++;
 
@@ -103,7 +103,7 @@ void SymbolTable::addScope()
     // Push a new offset.
     offsets.push_back(offsets.back());
     // Create a new scope table.
-    ScopeTable *table = new ScopeTable();
+    shared_ptr<ScopeTable> table = std::make_shared<ScopeTable>();
     // Push the scope table in the beginning of the scopes vector.
     scopes.push_back(table);
 }
@@ -114,7 +114,7 @@ void SymbolTable::dropScope()
     // Print scope ending.
     output::endScope();
     // Get the top scope.
-    ScopeTable *top = scopes.front();
+    shared_ptr<ScopeTable> top = scopes.front();
     // Close the top scope.
     top->closeAsScope();
     // Remove the scope from the vector.
@@ -167,4 +167,18 @@ TableRow *SymbolTable::getSymbol(string symName)
             return returned;
     }
     return nullptr;
+}
+
+SymbolTable::SymbolTable()
+{
+    shared_ptr<ScopeTable> scopeTable = std::make_shared<ScopeTable>();
+    scopes.push_back(scopeTable);
+    offsets = vector<int>();
+    offsets.push_back(0);
+}
+
+ScopeTable::ScopeTable()
+{
+    Debugger::print("Scope table init!");
+    entries = vector<TableRow *>();
 }

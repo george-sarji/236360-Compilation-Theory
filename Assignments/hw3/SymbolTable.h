@@ -31,7 +31,7 @@ public:
     TableRow *getSymbol(string symName);
     void closeAsScope();
 
-    ScopeTable() = default;
+    ScopeTable();
 };
 
 class SymbolTable
@@ -40,7 +40,7 @@ private:
     bool isDefined(string symName, bool funcSearch);
 
 public:
-    SymbolTable() = default;
+    SymbolTable();
 
     void addScope();
     void dropScope();
@@ -54,7 +54,7 @@ public:
     TableRow *getSymbol(string symName);
 
 private:
-    vector<ScopeTable *> scopes;
+    vector<shared_ptr<ScopeTable>> scopes;
     vector<int> offsets;
 };
 
