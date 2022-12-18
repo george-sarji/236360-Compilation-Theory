@@ -29,6 +29,7 @@ public:
     void addFuncRow(string name, vector<string> types, int offset);
     bool isDefined(string symName, bool funcSearch);
     shared_ptr<TableRow> getSymbol(string symName);
+    vector<shared_ptr<TableRow>> getTopScope();
     void closeAsScope();
 
     ScopeTable();
@@ -53,6 +54,7 @@ public:
     void addNewFunction(string name, vector<string> types);
     bool isInScope(string scopeName);
     shared_ptr<TableRow> getSymbol(string symName);
+    vector<shared_ptr<TableRow>> getTopScope();
 
 private:
     vector<shared_ptr<ScopeTable>> scopes;

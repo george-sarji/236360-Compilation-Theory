@@ -184,3 +184,13 @@ void SymbolTable::addNewParameter(string name, string type, int offset)
 {
     scopes.back()->addRow(name, type, offset);
 }
+
+vector<shared_ptr<TableRow>> SymbolTable::getTopScope()
+{
+    return scopes.front()->getTopScope();
+}
+
+vector<shared_ptr<TableRow>> ScopeTable::getTopScope()
+{
+    return entries;
+}
