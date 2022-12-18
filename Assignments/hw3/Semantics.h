@@ -3,11 +3,6 @@
 
 #include "SymbolTable.h"
 
-void openScope();
-void closeScope();
-void enterLoop();
-void exitLoop();
-
 class Node
 {
 public:
@@ -184,5 +179,10 @@ public:
 };
 
 void backfillFunctionArguments(Formals* formals);
+void openScope();
+void closeScope();
+void enterLoop();
+void exitLoop();
+void exitProgram();
 
 #endif

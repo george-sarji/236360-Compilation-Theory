@@ -479,3 +479,29 @@ void backfillFunctionArguments(Formals *formals)
         table->addNewParameter(declaration->value, declaration->type, -i - 1);
     }
 }
+
+void exitProgram()
+{
+    // We need to check the functions for the main function.
+    bool isMain = false;
+    Debugger::print("Validating main existence");
+    for (auto tableRow : table->getTopScope())
+    {
+        // Check the current function - is it main void?
+        if (tableRow->isFunc && tableRow->name == "main" && tableRow->type.back() == "VOID" && tableRow->type.size() == 1)
+        {
+            // We have a valid main.
+            isMain = true;
+        }
+    }
+    // Do we have a valid main?
+    if (!isMain)
+    {
+        // Program is missing a main.
+        output::errorMainMissing();
+        exit(0);
+    }
+    // Close the global scope.
+    Debugger::print("Closing global scope - end of program");
+    closeScope();
+}
