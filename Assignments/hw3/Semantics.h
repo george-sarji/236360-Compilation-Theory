@@ -5,6 +5,8 @@
 
 void openScope();
 void closeScope();
+void enterLoop();
+void exitLoop();
 
 class Node
 {

@@ -6,6 +6,7 @@
 extern int yylineno;
 extern char *yytext;
 std::shared_ptr<SymbolTable> table;
+int loopsCount = 0;
 
 Node::Node(string value) : value()
 {
@@ -258,10 +259,8 @@ Statement::Statement(Node *id, Exp *exp)
     }
 }
 
-Statement::Statement(Call *call)
+Statement::Statement(Call *call) : Node(call->value)
 {
-    // Not much to do here. Add the value of call.
-    value = call->value;
 }
 
 Statement::Statement(Exp *exp)
@@ -273,17 +272,41 @@ Statement::Statement(Exp *exp)
 
 Statement::Statement(Exp *exp, Statement *statement)
 {
-    // TODO: Add
+    // Check if the expression is boolea.n
+    if (exp->type != "BOOL")
+    {
+        // Not allowed. Throw mismatch.
+        output::errorMismatch(yylineno);
+        exit(0);
+    }
+    // Expression is valid.
 }
 
 Statement::Statement(Exp *exp, Statement *statement1, Statement *statement2)
 {
+    // Check if we have valid expressions.
+    if (exp->type != "BOOL")
+    {
+        // Throw mismatch.
+        output::errorMismatch(yylineno);
+        exit(0);
+    }
+    // Check if both statements are of the same type(?)
     // TODO: Add
 }
 
 Statement::Statement(Node *node)
 {
-    // TODO: Add
+    // Check if we're inside a loop.
+    if (loopsCount <= 0)
+    {
+        // Not a valid situation.
+        if (node->value == "BREAK")
+            output::errorUnexpectedBreak(yylineno);
+        else if (node->value == "CONTINUE")
+            output::errorUnexpectedContinue(yylineno);
+        exit(0);
+    }
 }
 
 Statements::Statements(Statement *statement)
@@ -395,4 +418,14 @@ Program::Program() : Node("Program")
     // Create the symbol table.
     Debugger::print("Making symbol table");
     table = make_shared<SymbolTable>();
+}
+
+void enterLoop()
+{
+    loopsCount++;
+}
+
+void exitLoop()
+{
+    loopsCount--;
 }
