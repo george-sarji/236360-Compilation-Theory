@@ -201,7 +201,7 @@ void openScope();
 void closeScope();
 void enterLoop();
 void exitLoop();
-void exitProgram();
+void exitProgram(int yychar, int eof);
 void validateIfExpression(Exp* exp);
 
 #endif

@@ -47,7 +47,7 @@
 
 /* Rules section */
 
-Program: {$$ = new Program(); } Funcs                                                              { output::printProductionRule(1); exitProgram(); }
+Program: {$$ = new Program(); } Funcs                                                              { output::printProductionRule(1); exitProgram(yychar, YYEOF); }
 Funcs:                                                                      { output::printProductionRule(2); }
     | FuncDecl Funcs                                                        { output::printProductionRule(3); }
 FuncDecl: RetType ID LPAREN Formals RPAREN { $$ = new FuncDecl(dynamic_cast<RetType*>($1), $2, dynamic_cast<Formals*>($4)); } LBRACE OpenScope {backfillFunctionArguments(dynamic_cast<Formals*>($4)); } Statements CloseScope RBRACE         { output::printProductionRule(4); }

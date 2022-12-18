@@ -500,6 +500,7 @@ Call::Call(Node *id)
 
 FuncDecl::FuncDecl(RetType *type, Node *id, Formals *formals)
 {
+    Debugger::print("Entered function declaration " + type->value + " " + id->value);
     // Check if the value was defined before.
     if (table->isDeclared(id->value))
     {
@@ -592,8 +593,13 @@ void backfillFunctionArguments(Formals *formals)
     }
 }
 
-void exitProgram()
+void exitProgram(int yychar, int eof)
 {
+    if (yychar != eof)
+    {
+        output::errorSyn(yylineno);
+        exit(0);
+    }
     // We need to check the functions for the main function.
     bool isMain = false;
     Debugger::print("Validating main existence");
