@@ -47,8 +47,10 @@ Formals::Formals(FormalsList *list)
 Exp::Exp(Exp *expression)
 {
     // Same resolution as given expression.
-    type = expression->value;
+    type = expression->type;
+    value = expression->value;
     booleanValue = expression->booleanValue;
+    Debugger::print("Received expression with type " + expression->type);
 }
 
 Exp::Exp(Call *call)
