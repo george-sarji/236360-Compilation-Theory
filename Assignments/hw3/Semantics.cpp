@@ -65,6 +65,7 @@ Exp::Exp(Exp *left, Node *op, Exp *right, bool isRelop)
     // We need to validate that the operation is legal.
     // This will happen according to the value of 'op' and the type of the left and right expressions.
     // Let's start checking for boolean operators.
+    Debugger::print("Entered operation with left " + left->type + ", op " + op->value + " and right " + right->type);
     if (left->type == "BOOL" && right->type == "BOOL")
     {
         // We know for granted the result is a bool.
@@ -82,6 +83,7 @@ Exp::Exp(Exp *left, Node *op, Exp *right, bool isRelop)
         {
             // This is not a valid operation.
             // Throw mismatch and exit the parser.
+            Debugger::print("Mismatch with op " + op->value);
             output::errorMismatch(yylineno);
             exit(0);
         }
@@ -190,9 +192,12 @@ Exp::Exp(Type *type, Exp *exp) : Node(type->value)
     // The only allowed casts are between int and byte.
     if ((exp->type != "INT" && exp->type != "BYTE") || (type->value != "INT" && type->value != "BYTE"))
     {
+        Debugger::print("Mismatch with exp type " + exp->type + " and type " + type->value);
         output::errorMismatch(yylineno);
         exit(0);
     }
+    Debugger::print("Exp validatedw with type " + type->value + " and exp type " + exp->type);
+    this->type = type->value;
 }
 
 Exp::Exp(Exp *exp1, Exp *exp2, Exp *exp3)
@@ -296,7 +301,8 @@ Statement::Statement(Node *id, Exp *exp)
     // We now need to check if the expression and the symbol types match.
     shared_ptr<TableRow> matchingRow = table->getSymbol(id->value);
     string symbolType = matchingRow->type.back();
-    if (symbolType == exp->type || (symbolType == "INT" && exp->type == "BYTE"))
+    Debugger::print("Received statement with node " + id->value + " and exp " + exp->type + " while node type is " + symbolType);
+    if (symbolType == exp->type || ((symbolType == "INT" || symbolType == "BYTE") && (exp->type == "INT" || exp->type == "BYTE")))
     {
         // We have a valid cast.
         // We need to update the symbol.
