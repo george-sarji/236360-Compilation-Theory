@@ -3,6 +3,9 @@
 
 #include "SymbolTable.h"
 
+void openScope();
+void closeScope();
+
 class Node
 {
 public:

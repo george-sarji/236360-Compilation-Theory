@@ -1,14 +1,16 @@
 #include "Semantics.h"
 #include "hw3_output.hpp"
+#include "Debugger.h"
 #include <stack>
 
 extern int yylineno;
 extern char *yytext;
 
-SymbolTable *table;
+SymbolTable *table = new SymbolTable();
 
 Node::Node(string value) : value()
 {
+    Debugger::print("Node ctor with value " + value);
     // Check for known types.
     if (value == "void")
         this->value = "VOID";
@@ -110,9 +112,11 @@ Exp::Exp(Exp *left, Node *op, Exp *right, bool isRelop)
 
 Exp::Exp(Node *id)
 {
+    Debugger::print("Entered exp node ctor");
     // We need to check if the given ID is a valid ID.
     if (table->isDefinedVariable(id->value))
     {
+        Debugger::print("Undefined variable found: " + id->value);
         output::errorUndef(yylineno, id->value);
         exit(0);
     }
@@ -371,4 +375,16 @@ FuncDecl::FuncDecl(RetType *type, Node *id, Formals *formals, Statements *statem
     }
     // We have a valid identifier.
     // Let's start preparing the new symbol.
+}
+
+void openScope()
+{
+    Debugger::print("Opening new scope");
+    table->addScope();
+}
+
+void closeScope()
+{
+    Debugger::print("Closing current scope");
+    table->dropScope();
 }
