@@ -111,8 +111,3 @@ void output::errorByteTooLarge(int lineno, const string &value)
 {
     cout << "line " << lineno << ": byte value " << value << " out of range" << endl;
 }
-
-void output::printProductionRule(int ruleNo)
-{
-    cout << "Received prod rule " << ruleNo << endl;
-}

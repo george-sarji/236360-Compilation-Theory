@@ -5,14 +5,20 @@
 #include <iostream>
 using namespace std;
 
-#define DEBUG 1
+#define DEBUG 0
 
 namespace Debugger
 {
     void static print(string message)
     {
-        if(DEBUG)
+        if (DEBUG)
             cout << "Message: " << message << endl;
+    }
+
+    void static printProductionRule(int ruleNo)
+    {
+        string output = "Received prod rule " + to_string(ruleNo);
+        Debugger::print(output);
     }
 }
 
