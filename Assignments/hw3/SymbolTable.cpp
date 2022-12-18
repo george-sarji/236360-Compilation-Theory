@@ -181,3 +181,8 @@ ScopeTable::ScopeTable()
 {
     Debugger::print("Scope table init!");
 }
+
+void SymbolTable::addNewParameter(string name, string type, int offset)
+{
+    scopes.back()->addRow(name, type, offset);
+}

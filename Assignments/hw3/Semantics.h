@@ -183,4 +183,6 @@ public:
     explicit Program();
 };
 
+void backfillFunctionArguments(Formals* formals);
+
 #endif
