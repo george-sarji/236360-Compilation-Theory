@@ -113,7 +113,7 @@ Exp::Exp(Node *id)
 {
     Debugger::print("Entered exp node ctor");
     // We need to check if the given ID is a valid ID.
-    if (table->isDefinedVariable(id->value))
+    if (!table->isDefinedVariable(id->value))
     {
         Debugger::print("Undefined variable found: " + id->value);
         output::errorUndef(yylineno, id->value);
