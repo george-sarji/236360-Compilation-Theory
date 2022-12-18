@@ -337,7 +337,7 @@ Statement::Statement(Exp *exp)
         Debugger::print("Current row: " + row->name);
         if (row->isFunc && row->name == currentScope)
         {
-            if (row->type.back() != exp->type)
+            if (row->type.back() != exp->type && !(row->type.back() == "INT" && exp->type == "BYTE"))
             {
                 output::errorMismatch(yylineno);
                 exit(0);
