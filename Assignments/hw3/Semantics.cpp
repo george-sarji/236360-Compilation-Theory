@@ -50,6 +50,13 @@ Exp::Exp(Exp *expression)
     booleanValue = expression->booleanValue;
 }
 
+Exp::Exp(Call *call)
+{
+    // Same return as call.
+    type = call->value;
+    value = call->value;
+}
+
 Exp::Exp(Exp *left, Node *op, Exp *right, bool isRelop)
 {
     // We need to validate that the operation is legal.

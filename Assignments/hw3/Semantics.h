@@ -62,6 +62,9 @@ public:
     Formals() = default;
 };
 
+// Shell due to circular dependency.
+class Call;
+
 class Exp : public Node
 {
 public:
@@ -78,6 +81,9 @@ public:
 
     // Exp: ID
     explicit Exp(Node *id);
+
+    // Exp: Call
+    explicit Exp(Call* call);
 
     // Exp: NUM/NUM B/STRING/TRUE/FALSE
     Exp(Node *term, string expType);
