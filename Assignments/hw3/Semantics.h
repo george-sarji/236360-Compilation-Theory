@@ -93,6 +93,9 @@ public:
 
     // Exp: LPAREN Type RPAREN Exp
     Exp(Type *type, Exp *exp);
+
+    // Exp: Exp IF LPAREN Exp RPAREN ELSE Exp
+    Exp(Exp* exp1, Exp* exp2, Exp* exp3);
 };
 
 class ExpList : public Node

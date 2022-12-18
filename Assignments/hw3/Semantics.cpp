@@ -192,6 +192,44 @@ Exp::Exp(Type *type, Exp *exp) : Node(type->value)
     }
 }
 
+Exp::Exp(Exp *exp1, Exp *exp2, Exp *exp3)
+{
+    Debugger::print("Entered trinary operator!!");
+    Debugger::print("Exp1: " + exp1->type + ". Exp2: " + exp2->type + ". Exp3: " + exp3->type);
+    // We need to check if exp1 is boolean.
+    if (exp2->type != "BOOL")
+    {
+        // Not allowed. Mismatch.
+        output::errorMismatch(yylineno);
+        exit(0);
+    }
+    // We now need to validate that both expressions are the same type.
+    // Do we have int/byte?
+    if ((exp1->type == "INT" || exp1->type == "BYTE") && (exp3->type == "INT" || exp3->type == "BYTE"))
+    {
+        // Valid.
+        // We need to know what's the return type.
+        if (exp2->booleanValue)
+            type = exp1->type;
+        else
+            type = exp3->type;
+    }
+    else if (exp1->type != exp3->type)
+    {
+        // We have a mismatch.
+        output::errorMismatch(yylineno);
+        exit(0);
+    }
+    else
+    {
+        // According to the boolean value.
+        if (exp2->booleanValue)
+            type = exp1->type;
+        else
+            type = exp3->type;
+    }
+}
+
 ExpList::ExpList(Exp *exp)
 {
     // Initialize the expressions vector with the given exp.
