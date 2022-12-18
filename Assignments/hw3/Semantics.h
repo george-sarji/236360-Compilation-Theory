@@ -202,5 +202,6 @@ void closeScope();
 void enterLoop();
 void exitLoop();
 void exitProgram();
+void validateIfExpression(Exp* exp);
 
 #endif

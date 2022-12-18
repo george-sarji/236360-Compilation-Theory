@@ -67,8 +67,8 @@ Statement: LBRACE OpenScope Statements CloseScope RBRACE                        
     | Call SC                                                               { output::printProductionRule(18); $$ = new Statement(dynamic_cast<Call*>($1)); }
     | RETURN SC                                                             { output::printProductionRule(19); $$ = new Statement(); }
     | RETURN Exp SC                                                         { output::printProductionRule(20); $$ = new Statement(dynamic_cast<Exp*>($2)); }
-    | IF LPAREN Exp RPAREN OpenScope Statement %prec IF                               { output::printProductionRule(21); $$ = new Statement(dynamic_cast<Exp*>($3), dynamic_cast<Statement*>($6)); closeScope(); }
-    | IF LPAREN Exp RPAREN OpenScope Statement ELSE {closeScope(); } OpenScope Statement CloseScope                         { output::printProductionRule(22); $$ = new Statement(dynamic_cast<Exp*>($3), dynamic_cast<Statement*>($6), dynamic_cast<Statement*>($8)); }
+    | IF LPAREN ExpIf RPAREN OpenScope Statement %prec IF                               { output::printProductionRule(21); $$ = new Statement(dynamic_cast<Exp*>($3), dynamic_cast<Statement*>($6)); closeScope(); }
+    | IF LPAREN ExpIf RPAREN OpenScope Statement ELSE {closeScope(); } OpenScope Statement CloseScope                         { output::printProductionRule(22); $$ = new Statement(dynamic_cast<Exp*>($3), dynamic_cast<Statement*>($6), dynamic_cast<Statement*>($8)); }
     | WHILE LPAREN Exp RPAREN OpenScope { enterLoop(); } Statement { exitLoop(); } CloseScope                                     { output::printProductionRule(23); $$ = new Statement(dynamic_cast<Exp*>($3), dynamic_cast<Statement*>($7)); }
     | BREAK SC                                                              { output::printProductionRule(24); $$ = new Statement($1); }
     | CONTINUE SC                                                           { output::printProductionRule(25); $$ = new Statement($1); }
@@ -96,6 +96,8 @@ Exp: LPAREN Exp RPAREN                                                      { ou
     | Exp RELOP Exp                                                         { output::printProductionRule(45); $$ = new Exp(dynamic_cast<Exp*>($1), $2, dynamic_cast<Exp*>($3), true); }
     | LPAREN Type RPAREN Exp                                                { output::printProductionRule(46); $$ = new Exp(dynamic_cast<Type*>($2), dynamic_cast<Exp*>($4)); }
     | Exp IF LPAREN Exp RPAREN ELSE Exp                                     { output::printProductionRule(99); $$ = new Exp(dynamic_cast<Exp*>($1), dynamic_cast<Exp*>($4), dynamic_cast<Exp*>($7)); }
+
+ExpIf: Exp { validateIfExpression(dynamic_cast<Exp*>($1)); $$ = $1;}
 
 OpenScope: { openScope(); }
 CloseScope: { closeScope(); }

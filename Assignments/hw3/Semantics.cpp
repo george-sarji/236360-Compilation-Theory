@@ -339,6 +339,8 @@ Statement::Statement(Exp *exp)
 
 Statement::Statement(Exp *exp, Statement *statement)
 {
+    Debugger::print("Entered if conditional with expression type " + exp->type + " at line no " + to_string(yylineno));
+    Debugger::print("Statement is " + statement->value);
     // Check if the expression is boolea.n
     if (exp->type != "BOOL")
     {
@@ -402,8 +404,10 @@ Statement::Statement()
     value = "VOID";
 }
 
-Statement::Statement(Statements* statements)
-{}
+Statement::Statement(Statements *statements)
+{
+    Debugger::print("Entered statements init with " + statements->value + " at line no " + to_string(yylineno));
+}
 
 Statements::Statements(Statement *statement)
 {
@@ -600,4 +604,14 @@ void exitProgram()
     // Close the global scope.
     Debugger::print("Closing global scope - end of program");
     closeScope();
+}
+
+void validateIfExpression(Exp *exp)
+{
+    // Check if the expression is bool.
+    if (exp->type != "BOOL")
+    {
+        output::errorMismatch(yylineno);
+        exit(0);
+    }
 }
