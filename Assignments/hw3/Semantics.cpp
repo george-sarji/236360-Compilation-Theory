@@ -215,12 +215,14 @@ Exp::Exp(Exp *exp1, Exp *exp2, Exp *exp3)
     // Do we have int/byte?
     if ((exp1->type == "INT" || exp1->type == "BYTE") && (exp3->type == "INT" || exp3->type == "BYTE"))
     {
+        Debugger::print("Entered trinary conditional with exp1 " + exp1->type + ", exp2 " + exp2->type + ", exp3 " + exp3->type);
+        Debugger::print("If statement condition is " + to_string(exp2->booleanValue));
         // Valid.
         // We need to know what's the return type.
-        if (exp2->booleanValue)
-            type = exp1->type;
+        if (exp1->type == "INT" || exp2->type == "INT")
+            type = "INT";
         else
-            type = exp3->type;
+            type = "BYTE";
     }
     else if (exp1->type != exp3->type)
     {
