@@ -223,6 +223,7 @@ Exp::Exp(Exp *exp1, Exp *exp2, Exp *exp3)
             type = "INT";
         else
             type = "BYTE";
+        Debugger::print("Trinary expression assigned with type " + type);
     }
     else if (exp1->type != exp3->type)
     {
@@ -463,6 +464,9 @@ Call::Call(Node *id, ExpList *expList)
         // Check the current expression with the current type.
         if (expressions[i]->type != types[i])
         {
+            // Special case: printi with byte.
+            if (id->value == "printi" && expressions[i]->type == "BYTE" && types[i] == "INT")
+                continue;
             // We have a mismatch in arguments.
             output::errorPrototypeMismatch(yylineno, id->value, types);
             exit(0);
