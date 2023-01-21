@@ -2,6 +2,7 @@
 #define SEMANTICS_H_
 
 #include "SymbolTable.h"
+#include "bp.hpp"
 
 class Node
 {
@@ -72,6 +73,8 @@ public:
     string type;
     // Used for comparison for AND/OR
     bool booleanValue;
+    vector<pair<int, BranchLabelIndex>> trueList;
+    vector<pair<int, BranchLabelIndex>> falseList;
 
     // Exp: LPAREN Exp RPAREN
     explicit Exp(Exp *expression);
