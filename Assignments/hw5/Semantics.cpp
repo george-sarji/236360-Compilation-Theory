@@ -1,6 +1,8 @@
 #include "Semantics.h"
 #include "hw3_output.hpp"
 #include "Debugger.h"
+#include "RegisterProvider.h"
+#include "bp.hpp"
 #include <stack>
 
 extern int yylineno;
@@ -8,6 +10,8 @@ extern char *yytext;
 std::shared_ptr<SymbolTable> table;
 int loopsCount = 0;
 string currentScope = "";
+CodeBuffer &buffer = CodeBuffer::instance();
+RegisterProvider *registerProvider;
 
 Node::Node(string value) : value()
 {
@@ -579,6 +583,29 @@ Program::Program() : Node("Program")
     Debugger::print("Start of program - Adding print functions");
     table->addNewFunction("print", {"STRING", "VOID"});
     table->addNewFunction("printi", {"INT", "VOID"});
+
+    // Declare the print and exit functions.
+    Debugger::print("Defining declarations for printf and exit");
+    buffer.emitGlobal("declare i32 @printf(i8*, ...)");
+    buffer.emitGlobal("declare void @exit(i32)");
+    // Declare specifiers as required
+    Debugger::print("Defining specifiers for types");
+    buffer.emitGlobal("@.int_specifier = constant [4 x i8] c\"%d\\0A\\00\"");
+    buffer.emitGlobal("@.str_specifier = constant [4 x i8] c\"%s\\0A\\00\"");
+    // Declare print and printi functions as given.
+    Debugger::print("Defining printi");
+    buffer.emitGlobal("define void @printi(i32) {");
+    buffer.emitGlobal("%spec_ptr = getelementptr [4 x i8], [4 x i8]* @.int_specifier, i32 0, i32 0");
+    buffer.emitGlobal("call i32 (i8*, ...) @printf(i8* %spec_ptr, i32 %0)");
+    buffer.emitGlobal("ret void");
+    buffer.emitGlobal("}");
+
+    Debugger::print("Defning print");
+    buffer.emitGlobal("define void @print(i8*) {");
+    buffer.emitGlobal("%spec_ptr = getelementptr [4 x i8], [4 x i8]* @.str_specifier, i32 0, i32 0");
+    buffer.emitGlobal("call i32 (i8*, ...) @printf(i8* %spec_ptr, i8* %0)");
+    buffer.emitGlobal("ret void");
+    buffer.emitGlobal("}");
 }
 
 void enterLoop()
