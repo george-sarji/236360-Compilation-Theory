@@ -1,0 +1,119 @@
+%{
+    #include "hw3_output.hpp"
+    #include <iostream>
+    #include "Semantics.h"
+    #include "Debugger.h"
+    using namespace std;
+
+    extern int yylex();
+    extern int yylineno;
+    int yyerror(const char* message);
+%}
+
+/* Tokens section */
+
+/* Add all the reserved keywords that have no left or right association */
+%nonassoc VOID;
+%nonassoc INT;
+%nonassoc BYTE;
+%nonassoc B;
+%nonassoc BOOL;
+%nonassoc TRUE;
+%nonassoc FALSE;
+%nonassoc RETURN;
+%nonassoc IF;
+%nonassoc ELSE;
+%nonassoc WHILE;
+%nonassoc BREAK;
+%nonassoc CONTINUE;
+%nonassoc SC;
+%nonassoc COMMA;
+%nonassoc ID;
+%nonassoc NUM;
+%nonassoc STRING;
+%right ASSIGN;
+%left OR;
+%left AND;
+%left EQ_RELOP;
+%nonassoc RELOP;
+%left ADD_BINOP;
+%left BINOP;
+%right NOT;
+%left RBRACE;
+%left LBRACE;
+%left RPAREN;
+%left LPAREN;
+
+%%
+
+/* Rules section */
+
+Program: {$$ = new Program(); } Funcs                                                              { Debugger::printProductionRule(1); exitProgram(yychar, YYEOF); }
+Funcs:                                                                      { Debugger::printProductionRule(2); }
+    | FuncDecl Funcs                                                        { Debugger::printProductionRule(3); }
+FuncDecl: RetType ID LPAREN Formals RPAREN { $$ = new FuncDecl(dynamic_cast<RetType*>($1), $2, dynamic_cast<Formals*>($4)); } LBRACE OpenScope {backfillFunctionArguments(dynamic_cast<Formals*>($4)); } Statements CloseScope RBRACE         { Debugger::printProductionRule(4); }
+RetType: Type                                                               { Debugger::printProductionRule(5); $$ = new RetType($1); }
+    | VOID                                                                  { Debugger::printProductionRule(6); $$ = new RetType($1); }
+Formals:                                                                    { Debugger::printProductionRule(7); $$ = new Formals(); }
+    | FormalsList                                                           { Debugger::printProductionRule(8); $$ = new Formals(dynamic_cast<FormalsList*>($1)); }
+FormalsList: FormalDecl                                                     { Debugger::printProductionRule(9); $$ = new FormalsList(dynamic_cast<FormalDecl*>($1)); }
+    | FormalDecl COMMA FormalsList                                          { Debugger::printProductionRule(10); $$ = new FormalsList(dynamic_cast<FormalDecl*>($1), dynamic_cast<FormalsList*>($3)); }
+FormalDecl: Type ID                                                         { Debugger::printProductionRule(11); $$ = new FormalDecl(dynamic_cast<Type*>($1), $2); }
+Statements: Statement                                                       { Debugger::printProductionRule(12); $$ = new Statements(dynamic_cast<Statement*>($1)); }
+    | Statements Statement                                                  { Debugger::printProductionRule(13); $$ = new Statements(dynamic_cast<Statements*>($1), dynamic_cast<Statement*>($2)); }
+Statement: LBRACE OpenScope Statements CloseScope RBRACE                                         { Debugger::printProductionRule(14); $$ = new Statement(dynamic_cast<Statements*>($3)); }
+    | Type ID SC                                                            { Debugger::printProductionRule(15); $$ = new Statement(dynamic_cast<Type*>($1), $2); }
+    | Type ID ASSIGN Exp SC                                                 { Debugger::printProductionRule(16); $$ = new Statement(dynamic_cast<Type*>($1), $2, dynamic_cast<Exp*>($4)); }
+    | ID ASSIGN Exp SC                                                      { Debugger::printProductionRule(17); $$ = new Statement($1, dynamic_cast<Exp*>($3)); }
+    | Call SC                                                               { Debugger::printProductionRule(18); $$ = new Statement(dynamic_cast<Call*>($1)); }
+    | RETURN SC                                                             { Debugger::printProductionRule(19); $$ = new Statement(); }
+    | RETURN Exp SC                                                         { Debugger::printProductionRule(20); $$ = new Statement(dynamic_cast<Exp*>($2)); }
+    | IF LPAREN ExpIf RPAREN OpenScope Statement %prec IF                               { Debugger::printProductionRule(21); $$ = new Statement(dynamic_cast<Exp*>($3), dynamic_cast<Statement*>($6)); closeScope(); }
+    | IF LPAREN ExpIf RPAREN OpenScope Statement ELSE {closeScope(); } OpenScope Statement CloseScope                         { Debugger::printProductionRule(22); $$ = new Statement(dynamic_cast<Exp*>($3), dynamic_cast<Statement*>($6), dynamic_cast<Statement*>($8)); }
+    | WHILE LPAREN ExpIf RPAREN OpenScope { enterLoop(); } Statement { exitLoop(); } CloseScope                                     { Debugger::printProductionRule(23); $$ = new Statement(dynamic_cast<Exp*>($3), dynamic_cast<Statement*>($7)); }
+    | BREAK SC                                                              { Debugger::printProductionRule(24); $$ = new Statement($1); }
+    | CONTINUE SC                                                           { Debugger::printProductionRule(25); $$ = new Statement($1); }
+Call: ID LPAREN ExpList RPAREN                                              { Debugger::printProductionRule(26); $$ = new Call($1, dynamic_cast<ExpList*>($3)); }
+    | ID LPAREN RPAREN                                                      { Debugger::printProductionRule(27); $$ = new Call($1); }
+ExpList: Exp                                                                { Debugger::printProductionRule(28); $$ = new ExpList(dynamic_cast<Exp*>($1)); }
+    | Exp COMMA ExpList                                                     { Debugger::printProductionRule(29); $$ = new ExpList(dynamic_cast<Exp*>($1), dynamic_cast<ExpList*>($3)); }
+Type: INT                                                                   { Debugger::printProductionRule(30); $$ = new Type($1); }
+    | BYTE                                                                  { Debugger::printProductionRule(31); $$ = new Type($1); }
+    | BOOL                                                                  { Debugger::printProductionRule(32); $$ = new Type($1); }
+Exp: LPAREN Exp RPAREN                                                      { Debugger::printProductionRule(33); $$ = new Exp(dynamic_cast<Exp*>($2)); }
+    | Exp ADD_BINOP Exp                                                     { Debugger::printProductionRule(34); $$ = new Exp(dynamic_cast<Exp*>($1), $2, dynamic_cast<Exp*>($3), false); }
+    | Exp BINOP Exp                                                         { Debugger::printProductionRule(34); $$ = new Exp(dynamic_cast<Exp*>($1), $2, dynamic_cast<Exp*>($3), false); }
+    | ID                                                                    { Debugger::printProductionRule(35); $$ = new Exp($1); }
+    | Call                                                                  { Debugger::printProductionRule(36); $$ = new Exp(dynamic_cast<Call*>($1)); }
+    | NUM                                                                   { Debugger::printProductionRule(37); $$ = new Exp($1, "NUM"); }
+    | NUM B                                                                 { Debugger::printProductionRule(38); $$ = new Exp($1, "NUM B"); }
+    | STRING                                                                { Debugger::printProductionRule(39); $$ = new Exp($1, "STRING"); }
+    | TRUE                                                                  { Debugger::printProductionRule(40); $$ = new Exp($1, "BOOL"); }
+    | FALSE                                                                 { Debugger::printProductionRule(41); $$ = new Exp($1, "BOOL"); }
+    | NOT Exp                                                               { Debugger::printProductionRule(42); $$ = new Exp($1, dynamic_cast<Exp*>($2)); }
+    | Exp AND Exp                                                           { Debugger::printProductionRule(43); $$ = new Exp(dynamic_cast<Exp*>($1), $2, dynamic_cast<Exp*>($3), false); }
+    | Exp OR Exp                                                            { Debugger::printProductionRule(44); $$ = new Exp(dynamic_cast<Exp*>($1), $2, dynamic_cast<Exp*>($3), false); }
+    | Exp EQ_RELOP Exp                                                      { Debugger::printProductionRule(45); $$ = new Exp(dynamic_cast<Exp*>($1), $2, dynamic_cast<Exp*>($3), true); }
+    | Exp RELOP Exp                                                         { Debugger::printProductionRule(45); $$ = new Exp(dynamic_cast<Exp*>($1), $2, dynamic_cast<Exp*>($3), true); }
+    | LPAREN Type RPAREN Exp                                                { Debugger::printProductionRule(46); $$ = new Exp(dynamic_cast<Type*>($2), dynamic_cast<Exp*>($4)); }
+    | Exp IF LPAREN Exp RPAREN ELSE Exp                                     { Debugger::printProductionRule(99); $$ = new Exp(dynamic_cast<Exp*>($1), dynamic_cast<Exp*>($4), dynamic_cast<Exp*>($7)); }
+
+ExpIf: Exp { validateIfExpression(dynamic_cast<Exp*>($1)); $$ = $1;}
+
+OpenScope: { openScope(); }
+CloseScope: { closeScope(); }
+
+%%
+
+/* Functions section */
+
+int main()
+{
+    return yyparse();
+}
+
+int yyerror(const char* message)
+{
+    output::errorSyn(yylineno);
+    exit(0);
+}
