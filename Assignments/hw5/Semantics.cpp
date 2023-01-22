@@ -13,6 +13,30 @@ string currentScope = "";
 CodeBuffer &buffer = CodeBuffer::instance();
 RegisterProvider *registerProvider;
 
+string ToLLVM(string type)
+{
+    if (type == "VOID")
+    {
+        return "void";
+    }
+    else if (type == "BOOL")
+    {
+        return "i1";
+    }
+    else if (type == "BYTE")
+    {
+        return "i8";
+    }
+    else if (type == "STRING")
+    {
+        return "i8*";
+    }
+    else
+    {
+        return "i32";
+    }
+}
+
 Node::Node(string value) : value(), registerName(""), instruction("")
 {
     // Check for known types.
@@ -269,6 +293,9 @@ Statement::Statement(Type *type, Node *id)
     // We don't have that ID defined. Let's add it.
     value = type->value;
     table->addNewSymbol(id->value, type->value);
+    // Get a new register for the value.
+    registerName = registerProvider->GetNewRegister();
+    // Convert the type to LLVM type
 }
 
 Statement::Statement(Type *type, Node *id, Exp *exp)

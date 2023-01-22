@@ -208,5 +208,6 @@ void enterLoop();
 void exitLoop();
 void exitProgram(int yychar, int eof);
 void validateIfExpression(Exp* exp);
+string ToLLVM(string type)
 
 #endif
