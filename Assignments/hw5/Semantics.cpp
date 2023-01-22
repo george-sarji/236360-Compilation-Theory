@@ -37,6 +37,13 @@ string ToLLVM(string type)
     }
 }
 
+string zeroExtension(string registerName, string llvmType)
+{
+    string destinationRegister = registerProvider->GetNewRegister();
+    buffer.emit("%" + destinationRegister + " = zext " + llvmType + " %" + registerName + " to i32");
+    return destinationRegister;
+}
+
 Node::Node(string value) : value(), registerName(""), instruction("")
 {
     // Check for known types.
@@ -307,10 +314,7 @@ Statement::Statement(Type *type, Node *id)
     if (llvmType != "i32")
     {
         // We need to perform zext.
-        // Get a new register.
-        dataRegisterName = registerProvider->GetNewRegister();
-        // Perform zext.
-        buffer.emit("%" + dataRegisterName + " = zext " + llvmType + " %" + registerName + " to i32");
+        dataRegisterName = zeroExtension(registerName, llvmType);
     }
     // Store the variable into the stack.
     buffer.emit("store i32 %" + dataRegisterName + ", i32* %" + newPointer);

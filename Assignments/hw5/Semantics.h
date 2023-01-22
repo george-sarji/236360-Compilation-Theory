@@ -209,5 +209,6 @@ void exitLoop();
 void exitProgram(int yychar, int eof);
 void validateIfExpression(Exp* exp);
 string ToLLVM(string type);
+string zeroExtension(string registerName, string llvmType);
 
 #endif
