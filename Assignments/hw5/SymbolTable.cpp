@@ -61,7 +61,7 @@ bool ScopeTable::isDefined(string symName, bool funcSearch)
     return false;
 }
 
-void SymbolTable::addNewSymbol(string name, string type)
+int SymbolTable::addNewSymbol(string name, string type)
 {
     // Let's go into the top scope (beginning of the vector.)
     shared_ptr<ScopeTable> currentScope = scopes.back();
@@ -70,6 +70,7 @@ void SymbolTable::addNewSymbol(string name, string type)
     Debugger::print("Adding new symbol " + name + " of type " + type + " with offset " + to_string(newOffset));
     // Let's add a new row into the scope table.
     currentScope->addRow(name, type, newOffset);
+    return newOffset;
 }
 
 void SymbolTable::addNewFunction(string name, vector<string> types)

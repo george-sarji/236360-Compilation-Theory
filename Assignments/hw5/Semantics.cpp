@@ -292,10 +292,28 @@ Statement::Statement(Type *type, Node *id)
     }
     // We don't have that ID defined. Let's add it.
     value = type->value;
-    table->addNewSymbol(id->value, type->value);
+    int offset = table->addNewSymbol(id->value, type->value);
     // Get a new register for the value.
     registerName = registerProvider->GetNewRegister();
     // Convert the type to LLVM type
+    string llvmType = ToLLVM(type->value);
+    // Declare empty variable.
+    buffer.emit("%" + registerName + " = add" + llvmType + " 0,0");
+    // Get a new register pointer for use in fetching.
+    string newPointer = registerProvider->GetNewRegister();
+    buffer.emit("%" + newPointer + " = getelementptr [50 x i32], [50 x i32*]* %stack, i32 0, i32 " + to_string(offset));
+    string dataRegisterName = registerName;
+    // Do we need to perform zero extension?
+    if (llvmType != "i32")
+    {
+        // We need to perform zext.
+        // Get a new register.
+        dataRegisterName = registerProvider->GetNewRegister();
+        // Perform zext.
+        buffer.emit("%" + dataRegisterName + " = zext " + llvmType + " %" + registerName + " to i32");
+    }
+    // Store the variable into the stack.
+    buffer.emit("store i32 %" + dataRegisterName + ", i32* %" + newPointer);
 }
 
 Statement::Statement(Type *type, Node *id, Exp *exp)
