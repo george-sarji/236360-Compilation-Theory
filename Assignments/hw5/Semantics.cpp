@@ -13,7 +13,7 @@ string currentScope = "";
 CodeBuffer &buffer = CodeBuffer::instance();
 RegisterProvider *registerProvider;
 
-Node::Node(string value) : value()
+Node::Node(string value) : value(), registerName(""), instruction("")
 {
     // Check for known types.
     if (value == "void")

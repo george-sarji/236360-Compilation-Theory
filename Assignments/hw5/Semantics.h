@@ -8,6 +8,8 @@ class Node
 {
 public:
     string value;
+    string registerName;
+    string instruction;
 
     explicit Node(string value);
 
