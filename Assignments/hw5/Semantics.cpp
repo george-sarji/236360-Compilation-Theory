@@ -618,6 +618,7 @@ void exitLoop()
 {
     Debugger::print("Exiting loop");
     loopsCount--;
+    // TODO: Add backpatching for loops according to markers and statement
 }
 
 void backfillFunctionArguments(Formals *formals)
