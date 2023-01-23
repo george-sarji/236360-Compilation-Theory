@@ -86,6 +86,10 @@ Exp::Exp(Exp *expression)
     value = expression->value;
     booleanValue = expression->booleanValue;
     Debugger::print("Received expression with type " + expression->type);
+    trueList = expression->trueList;
+    falseList = expression->falseList;
+    instruction = expression->instruction;
+    registerName = expression->registerName;
 }
 
 Exp::Exp(Call *call)
@@ -93,6 +97,10 @@ Exp::Exp(Call *call)
     // Same return as call.
     type = call->value;
     value = call->value;
+    trueList = vector<pair<int, BranchLabelIndex>>();
+    falseList = vector<pair<int, BranchLabelIndex>>();
+    instruction = call->instruction;
+    registerName = call->registerName;
 }
 
 Exp::Exp(Exp *left, Node *op, Exp *right, bool isRelop)
