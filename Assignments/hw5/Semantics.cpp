@@ -39,6 +39,7 @@ string ToLLVM(string type)
 
 string zeroExtension(string registerName, string llvmType)
 {
+    Debugger::print("Extending register " + registerName + " from type " + llvmType + " to i32");
     string destinationRegister = registerProvider->GetNewRegister();
     buffer.emit("%" + destinationRegister + " = zext " + llvmType + " %" + registerName + " to i32");
     return destinationRegister;
@@ -109,6 +110,10 @@ Exp::Exp(Exp *left, Node *op, Exp *right, bool isRelop)
     // This will happen according to the value of 'op' and the type of the left and right expressions.
     // Let's start checking for boolean operators.
     Debugger::print("Entered operation with left " + left->type + ", op " + op->value + " and right " + right->type);
+    // Assign register and lists as required.
+    registerName = registerProvider->GetNewRegister();
+    trueList = vector<pair<int, BranchLabelIndex>>();
+    falseList = vector<pair<int, BranchLabelIndex>>();
     if (left->type == "BOOL" && right->type == "BOOL")
     {
         // We know for granted the result is a bool.
@@ -140,6 +145,68 @@ Exp::Exp(Exp *left, Node *op, Exp *right, bool isRelop)
         {
             // It's a relop. Return type will be bool.
             type = "BOOL";
+            // We know the result will be saved in an i1 (bool)
+            string llvmReturn = "i1";
+            bool isSigned = false;
+            if (left->type == "INT" || right->type == "INT")
+                isSigned = true;
+            // We need to go through the current operation and figure out what the operation for icmp will be.
+            string icmpRelop;
+            if (op->value == "==")
+                icmpRelop = "eq";
+            else if (op->value == "!=")
+                icmpRelop = "neq";
+            else if (op->value == ">")
+            {
+                // Do we have an unsigned?
+                if (isSigned)
+                    icmpRelop = "sgt";
+                else
+                    icmpRelop = "ugt";
+            }
+            else if (op->value == ">=")
+            {
+                if (isSigned)
+                    icmpRelop = "sge";
+                else
+                    icmpRelop = "uge";
+            }
+            else if (op->value == "<")
+            {
+                if (isSigned)
+                    icmpRelop = "slt";
+                else
+                    icmpRelop = "ult";
+            }
+            else if (op->value == "<=")
+            {
+                if (isSigned)
+                    icmpRelop = "sle";
+                else
+                    icmpRelop = "ule";
+            }
+
+            // Now we have the proper relop for icmp.
+            // Do we need to perform zero extension for the comparison?
+            string leftRegister = left->registerName;
+            string rightRegister = right->registerName;
+            if (isSigned)
+            {
+                if (left->type == "BYTE")
+                {
+                    // We need to zero extend left.
+                    leftRegister = zeroExtension(leftRegister, "i8");
+                }
+                if (right->type == "BYTE")
+                {
+                    // We need to zero extend right.
+                    rightRegister = zeroExtension(rightRegister, "i8");
+                }
+            }
+            // Emit the comparison.
+            buffer.emit("%" + registerName + " = icmp " + icmpRelop + " " + (isSigned ? "i32" : "i8") + " %" + leftRegister + ", " + rightRegister);
+            // TODO: What does this do?
+            
         }
         else
         {
