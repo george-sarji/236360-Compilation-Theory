@@ -449,6 +449,15 @@ Statement::Statement(Node *node)
         exit(0);
     }
     Debugger::print("Received end of stateemtn");
+    int bpLocation = buffer.emit("br label @");
+    if (node->value == "break")
+    {
+        breakList = buffer.makelist({bpLocation, FIRST});
+    }
+    else if (node->value == "continue")
+    {
+        continueList = buffer.makelist({bpLocation, FIRST});
+    }
 }
 
 Statement::Statement()
@@ -472,6 +481,8 @@ Statement::Statement()
         }
     }
     value = "VOID";
+    breakList = vector<pair<int, BranchLabelIndex>>();
+    continueList = vector<pair<int, BranchLabelIndex>>();
 }
 
 Statement::Statement(Statements *statements)

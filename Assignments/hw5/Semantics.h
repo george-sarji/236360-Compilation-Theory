@@ -30,7 +30,7 @@ class N : public Node
 {
 public:
     int location;
-    
+
     N();
 };
 
@@ -145,6 +145,10 @@ class Statements;
 class Statement : public Node
 {
 public:
+    // Used for backpatching.
+    vector<pair<int, BranchLabelIndex>> breakList;
+    vector<pair<int, BranchLabelIndex>> continueList;
+
     // Statement: Type ID SC
     Statement(Type *type, Node *id);
 
