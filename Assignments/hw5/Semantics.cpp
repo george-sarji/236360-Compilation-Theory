@@ -488,6 +488,8 @@ Statement::Statement()
 Statement::Statement(Statements *statements)
 {
     Debugger::print("Entered statements init with " + statements->value + " at line no " + to_string(yylineno));
+    breakList = statements->breakList;
+    continueList = statements->continueList;
 }
 
 Statements::Statements(Statement *statement)
