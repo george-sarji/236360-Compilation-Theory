@@ -206,21 +206,62 @@ Exp::Exp(Exp *left, Node *op, Exp *right, bool isRelop)
             // Emit the comparison.
             buffer.emit("%" + registerName + " = icmp " + icmpRelop + " " + (isSigned ? "i32" : "i8") + " %" + leftRegister + ", " + rightRegister);
             // TODO: What does this do?
-
         }
         else
         {
             // It's a binop.
             // Check the return type - if we have at least one integer, return is an integer.
+            string llvmReturnSize = "i8";
+            string leftRegister = left->registerName;
+            string rightRegister = right->registerName;
             if (left->type == "INT" || right->type == "INT")
             {
                 type = "INT";
+                llvmReturnSize = "i32";
             }
             else
             {
                 // Return type is a byte (both left and right are byte)
                 type = "BYTE";
             }
+
+            // Do we have to perform zero extension?
+            if (left->type != right->type)
+            {
+                if (left->type == "BYTE")
+                {
+                    // Zero extend to i32.
+                    leftRegister = zeroExtension(leftRegister, "i8");
+                }
+                if (right->type == "BYTE")
+                {
+                    rightRegister = zeroExtension(rightRegister, "i8");
+                }
+            }
+
+            // Let's check what operation we have.
+            string llvmOperation;
+            if (op->value == "+")
+            {
+                llvmOperation = "add";
+            }
+            else if (op->value == "-")
+            {
+                llvmOperation = "sub";
+            }
+            else if (op->value == "*")
+            {
+                llvmOperation = "mul";
+            }
+            else if (op->value == "/")
+            {
+                // We have special cases for division,
+                // We need to check for zero divisions and register exceptions.
+                string exceptionRegister = registerProvider.GetNewRegister();
+            }
+            // Emit the operation line.
+            buffer.emit("%" + registerName + " = " + llvmOperation + " " + llvmReturnSize + " %" + leftRegister + ", %" + rightRegister);
+            // TODO: Add truncation back to i8 sizes after division.
         }
     }
     else
