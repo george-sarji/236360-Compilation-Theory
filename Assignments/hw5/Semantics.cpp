@@ -560,7 +560,19 @@ Call::Call(Node *id)
     // We have a valid call.
     // Set the type as the call return.
     value = decl->type.back();
-    // TODO: Check what else we need here.
+    string llvmReturn = ToLLVM(value);
+    registerName = registerProvider->GetNewRegister();
+    // TODO: Add LLVM call emit according to return type.
+    if (llvmReturn == "void")
+    {
+        // Emit a void call.
+        buffer.emit("call " + llvmReturn + " @" + id->value + " ()");
+    }
+    else
+    {
+        // Emit a non-void call with register usage.
+        buffer.emit("%" + registerName + " = call " + llvmReturn + " @" + id->value + " ()");
+    }
 }
 
 FuncDecl::FuncDecl(RetType *type, Node *id, Formals *formals)
