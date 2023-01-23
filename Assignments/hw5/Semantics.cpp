@@ -518,23 +518,54 @@ Call::Call(Node *id, ExpList *expList)
     }
     // Let's go over the types one by one.
     vector<Exp *> expressions = expList->expressions;
+    string functionArgs = "(";
     for (int i = 0; i < types.size(); i++)
     {
         // Check the current expression with the current type.
-        if (expressions[i]->type != types[i])
+        if (expressions[i]->type == types[i])
+        {
+            functionArgs += ToLLVM(expressions[i]->type) + " %" + expressions[i]->registerName + ",";
+        }
+        else
         {
             // Special case: we can transform to compatible type.
             if (expressions[i]->type == "BYTE" && types[i] == "INT")
+            {
+                string zextRegister = zeroExtension(expressions[i]->registerName, "i8");
+                functionArgs += ToLLVM("INT") + "%" + zextRegister + ",";
                 continue;
+            }
             // We have a mismatch in arguments.
             output::errorPrototypeMismatch(yylineno, id->value, types);
             exit(0);
         }
     }
+    // Close the function arguments call.
+    functionArgs += ")";
     // We have a valid call.
     // Add the return value as the call value.
     value = returnType;
     // TODO: Check what else we need here.
+    string llvmReturnType = ToLLVM(value);
+    // Allocate a new register.
+    registerName = registerProvider->GetNewRegister();
+    // Do we have a void return?
+    if (llvmReturnType == "void")
+    {
+        // Emit a void function call
+        buffer.emit("call " + llvmReturnType + " @" + id->value + " " + functionArgs);
+    }
+    else
+    {
+        // We have a non-void function call.
+        // We need to allocate results to register.
+        buffer.emit("%" + registerName + " = call " + llvmReturnType + " @" + id->value + " " + functionArgs);
+    }
+
+    // TODO: Add backpatching.
+    int bpLocation = buffer.emit("br label @");
+    instruction = buffer.genLabel();
+    buffer.bpatch(buffer.makelist({bpLocation, FIRST}), instruction);
 }
 
 Call::Call(Node *id)
