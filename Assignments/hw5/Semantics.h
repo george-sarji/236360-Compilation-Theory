@@ -18,7 +18,21 @@ public:
     virtual ~Node() = default;
 };
 
-#define YYSTYPE Node*
+#define YYSTYPE Node *
+
+class M : public Node
+{
+public:
+    M();
+};
+
+class N : public Node
+{
+public:
+    int location;
+    
+    N();
+};
 
 class Type : public Node
 {
@@ -88,7 +102,7 @@ public:
     explicit Exp(Node *id);
 
     // Exp: Call
-    explicit Exp(Call* call);
+    explicit Exp(Call *call);
 
     // Exp: NUM/NUM B/STRING/TRUE/FALSE
     Exp(Node *term, string expType);
@@ -100,7 +114,7 @@ public:
     Exp(Type *type, Exp *exp);
 
     // Exp: Exp IF LPAREN Exp RPAREN ELSE Exp
-    Exp(Exp* exp1, Exp* exp2, Exp* exp3);
+    Exp(Exp *exp1, Exp *exp2, Exp *exp3);
 };
 
 class ExpList : public Node
@@ -160,8 +174,8 @@ public:
     // Statement: RETURN SC
     explicit Statement();
 
-    // Statement: LBRACE Statements RBRACE  
-    explicit Statement(Statements* statements);
+    // Statement: LBRACE Statements RBRACE
+    explicit Statement(Statements *statements);
 };
 
 class Statements : public Node
@@ -201,13 +215,13 @@ public:
     explicit Program();
 };
 
-void backfillFunctionArguments(Formals* formals);
+void backfillFunctionArguments(Formals *formals);
 void openScope();
 void closeScope();
 void enterLoop();
 void exitLoop();
 void exitProgram(int yychar, int eof);
-void validateIfExpression(Exp* exp);
+void validateIfExpression(Exp *exp);
 string ToLLVM(string type);
 string zeroExtension(string registerName, string llvmType);
 

@@ -610,6 +610,29 @@ FuncDecl::FuncDecl(RetType *type, Node *id, Formals *formals)
     Debugger::print("New function ID: " + id->value);
     currentScope = id->value;
     Debugger::print("New current scope: " + currentScope);
+
+    // We need to create the parameters line for LLVM.
+    string argumentsString = "(";
+    for (int i = 0; i < types.size(); i++)
+    {
+        argumentsString += ToLLVM(types[i]);
+        // Do we need to add a comma?
+        if (i < types.size() - 1)
+        {
+            argumentsString += ",";
+        }
+    }
+    // Close the arguments string.
+    argumentsString += ")";
+    // Get the LLVM return type.
+    string llvmReturn = ToLLVM(type->value);
+    // Define the function with LLVM.
+    buffer.emit("define " + llvmReturn + " @" + value + argumentsString + "{");
+    // Allocate the stack and arguments.
+    buffer.emit("%stack = alloca [50 x i32]");
+    buffer.emit("%args = alloca [" + to_string(types.size()) + " x i32]");
+
+    // TODO: Add register creation for all params.
 }
 
 void openScope()
