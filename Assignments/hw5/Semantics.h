@@ -186,6 +186,8 @@ class Statements : public Node
 {
 public:
     vector<Statement *> statements;
+    vector<pair<int, BranchLabelIndex>> breakList;
+    vector<pair<int, BranchLabelIndex>> continueList;
 
     // Statements: Statement
     explicit Statements(Statement *statement);
