@@ -495,6 +495,8 @@ Statement::Statement(Statements *statements)
 Statements::Statements(Statement *statement)
 {
     statements.insert(statements.begin(), statement);
+    breakList = statement->breakList;
+    continueList = statement->continueList;
 }
 
 Statements::Statements(Statements *statements, Statement *statement)
@@ -503,6 +505,8 @@ Statements::Statements(Statements *statements, Statement *statement)
     this->statements = vector<Statement *>(statements->statements);
     // Push the new statement to the back.
     this->statements.push_back(statement);
+    breakList = buffer.merge(statements->breakList, statement->breakList);
+    continueList = buffer.merge(statements->continueList, statement->continueList);
 }
 
 Call::Call(Node *id, ExpList *expList)
@@ -558,7 +562,6 @@ Call::Call(Node *id, ExpList *expList)
     // We have a valid call.
     // Add the return value as the call value.
     value = returnType;
-    // TODO: Check what else we need here.
     string llvmReturnType = ToLLVM(value);
     // Allocate a new register.
     registerName = registerProvider->GetNewRegister();
@@ -575,7 +578,6 @@ Call::Call(Node *id, ExpList *expList)
         buffer.emit("%" + registerName + " = call " + llvmReturnType + " @" + id->value + " " + functionArgs);
     }
 
-    // TODO: Add backpatching.
     int bpLocation = buffer.emit("br label @");
     instruction = buffer.genLabel();
     buffer.bpatch(buffer.makelist({bpLocation, FIRST}), instruction);
