@@ -11,7 +11,7 @@ std::shared_ptr<SymbolTable> table;
 int loopsCount = 0;
 string currentScope = "";
 CodeBuffer &buffer = CodeBuffer::instance();
-RegisterProvider *registerProvider;
+RegisterProvider registerProvider;
 
 string ToLLVM(string type)
 {
@@ -40,7 +40,7 @@ string ToLLVM(string type)
 string zeroExtension(string registerName, string llvmType)
 {
     Debugger::print("Extending register " + registerName + " from type " + llvmType + " to i32");
-    string destinationRegister = registerProvider->GetNewRegister();
+    string destinationRegister = registerProvider.GetNewRegister();
     buffer.emit("%" + destinationRegister + " = zext " + llvmType + " %" + registerName + " to i32");
     return destinationRegister;
 }
@@ -111,7 +111,7 @@ Exp::Exp(Exp *left, Node *op, Exp *right, bool isRelop)
     // Let's start checking for boolean operators.
     Debugger::print("Entered operation with left " + left->type + ", op " + op->value + " and right " + right->type);
     // Assign register and lists as required.
-    registerName = registerProvider->GetNewRegister();
+    registerName = registerProvider.GetNewRegister();
     trueList = vector<pair<int, BranchLabelIndex>>();
     falseList = vector<pair<int, BranchLabelIndex>>();
     if (left->type == "BOOL" && right->type == "BOOL")
@@ -206,7 +206,7 @@ Exp::Exp(Exp *left, Node *op, Exp *right, bool isRelop)
             // Emit the comparison.
             buffer.emit("%" + registerName + " = icmp " + icmpRelop + " " + (isSigned ? "i32" : "i8") + " %" + leftRegister + ", " + rightRegister);
             // TODO: What does this do?
-            
+
         }
         else
         {
@@ -376,13 +376,13 @@ Statement::Statement(Type *type, Node *id)
     value = type->value;
     int offset = table->addNewSymbol(id->value, type->value);
     // Get a new register for the value.
-    registerName = registerProvider->GetNewRegister();
+    registerName = registerProvider.GetNewRegister();
     // Convert the type to LLVM type
     string llvmType = ToLLVM(type->value);
     // Declare empty variable.
     buffer.emit("%" + registerName + " = add" + llvmType + " 0,0");
     // Get a new register pointer for use in fetching.
-    string newPointer = registerProvider->GetNewRegister();
+    string newPointer = registerProvider.GetNewRegister();
     buffer.emit("%" + newPointer + " = getelementptr [50 x i32], [50 x i32*]* %stack, i32 0, i32 " + to_string(offset));
     string dataRegisterName = registerName;
     // Do we need to perform zero extension?
@@ -639,7 +639,7 @@ Call::Call(Node *id, ExpList *expList)
     value = returnType;
     string llvmReturnType = ToLLVM(value);
     // Allocate a new register.
-    registerName = registerProvider->GetNewRegister();
+    registerName = registerProvider.GetNewRegister();
     // Do we have a void return?
     if (llvmReturnType == "void")
     {
@@ -682,7 +682,7 @@ Call::Call(Node *id)
     // Set the type as the call return.
     value = decl->type.back();
     string llvmReturn = ToLLVM(value);
-    registerName = registerProvider->GetNewRegister();
+    registerName = registerProvider.GetNewRegister();
     if (llvmReturn == "void")
     {
         // Emit a void call.
