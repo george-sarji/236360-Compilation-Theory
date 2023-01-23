@@ -608,7 +608,6 @@ Call::Call(Node *id)
     value = decl->type.back();
     string llvmReturn = ToLLVM(value);
     registerName = registerProvider->GetNewRegister();
-    // TODO: Add LLVM call emit according to return type.
     if (llvmReturn == "void")
     {
         // Emit a void call.
