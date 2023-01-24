@@ -118,10 +118,13 @@ Exp::Exp(Exp *left, Node *op, Exp *right, bool isRelop)
     {
         // We know for granted the result is a bool.
         type = "BOOL";
+        // TODO: Add boolean handling
         // Let's check if the operation is valid (and/or)
         if (op->value == "and")
         {
             booleanValue = left->booleanValue && right->booleanValue;
+            // We need to check the first condition - if it's true, jump to the second condition.
+            // If not, exit out.
         }
         else if (op->value == "or")
         {
