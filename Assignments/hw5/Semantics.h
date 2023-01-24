@@ -19,13 +19,14 @@ public:
 };
 
 #define YYSTYPE Node *
-
+// Marker used for if statements.
 class M : public Node
 {
 public:
     M();
 };
 
+// Marker used for loops
 class N : public Node
 {
 public:
@@ -117,6 +118,7 @@ public:
     Exp(Exp *exp1, Exp *exp2, Exp *exp3);
 };
 
+// Sort-of marker used for loops
 class P : public Node
 {
 public:
