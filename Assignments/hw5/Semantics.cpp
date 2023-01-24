@@ -875,7 +875,7 @@ FuncDecl::FuncDecl(RetType *type, Node *id, Formals *formals)
     // Get the LLVM return type.
     string llvmReturn = ToLLVM(type->value);
     // Define the function with LLVM.
-    buffer.emit("define " + llvmReturn + " @" + value + argumentsString + "{");
+    buffer.emit("define " + llvmReturn + " @" + id->value + argumentsString + "{");
     // Allocate the stack and arguments.
     buffer.emit("%stack = alloca [50 x i32]");
     buffer.emit("%args = alloca [" + to_string(types.size()) + " x i32]");
