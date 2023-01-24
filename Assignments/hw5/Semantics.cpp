@@ -981,6 +981,8 @@ void exitProgram(int yychar, int eof)
     }
     // Close the global scope.
     Debugger::print("Closing global scope - end of program");
+    buffer.printGlobalBuffer();
+    buffer.printCodeBuffer();
     closeScope();
 }
 
