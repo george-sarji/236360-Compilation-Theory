@@ -367,6 +367,10 @@ Exp::Exp(Type *type, Exp *exp) : Node(type->value)
     }
     Debugger::print("Exp validatedw with type " + type->value + " and exp type " + exp->type);
     this->type = type->value;
+    registerName = registerProvider.GetNewRegister();
+    trueList = exp->trueList;
+    falseList = exp->falseList;
+    instruction = exp->instruction;
 }
 
 Exp::Exp(Exp *exp1, Exp *exp2, Exp *exp3)
