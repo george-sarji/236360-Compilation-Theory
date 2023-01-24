@@ -5,11 +5,11 @@
 #include <iostream>
 using namespace std;
 
-#define DEBUG 0
+#define DEBUG 1
 
 namespace Debugger
 {
-    void static print(string message)
+    void static print(const string& message)
     {
         if (DEBUG)
             cout << "Message: " << message << endl;
