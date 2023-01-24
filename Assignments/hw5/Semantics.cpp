@@ -732,7 +732,7 @@ Call::Call(Node *id, ExpList *expList)
         // Check the current expression with the current type.
         if (expressions[i]->type == types[i])
         {
-            functionArgs += ToLLVM(expressions[i]->type) + " %" + expressions[i]->registerName;
+            functionArgs += ToLLVM(expressions[i]->type) + " %" + expressions[i]->registerName + ",";
         }
         else
         {
@@ -746,10 +746,6 @@ Call::Call(Node *id, ExpList *expList)
             // We have a mismatch in arguments.
             output::errorPrototypeMismatch(yylineno, id->value, types);
             exit(0);
-        }
-        if(i < types.size() - 1)
-        {
-            functionArgs += ",";
         }
     }
     // Close the function arguments call.
@@ -865,11 +861,11 @@ FuncDecl::FuncDecl(RetType *type, Node *id, Formals *formals)
 
     // We need to create the parameters line for LLVM.
     string argumentsString = "(";
-    for (int i = 0; i < types.size(); i++)
+    for (int i = 0; i < types.size() - 1; i++)
     {
         argumentsString += ToLLVM(types[i]);
         // Do we need to add a comma?
-        if (i < types.size() - 1)
+        if (i < types.size() - 2)
         {
             argumentsString += ",";
         }
