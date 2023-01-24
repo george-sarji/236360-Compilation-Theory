@@ -113,7 +113,7 @@ void SymbolTable::dropScope()
     Debugger::print("Dropping scope from symbol table----------------------");
     Debugger::print("We have " + to_string(scopes.size()) + " scopes open!");
     // Print scope ending.
-    output::endScope();
+    // output::endScope();
     // Get the top scope.
     shared_ptr<ScopeTable> top = scopes.back();
     // Close the top scope.
@@ -137,12 +137,12 @@ void ScopeTable::closeAsScope()
             // Push it out as we need only the arguments next.
             entry->type.pop_back();
             // Use the function print.
-            output::printID(entry->name, entry->offset, output::makeFunctionType(returnType, entry->type));
+            // output::printID(entry->name, entry->offset, output::makeFunctionType(returnType, entry->type));
         }
         // It's not a function, use a regular print without function types.
         else
         {
-            output::printID(entry->name, entry->offset, entry->type.back());
+            // output::printID(entry->name, entry->offset, entry->type.back());
         }
     }
 }
