@@ -207,7 +207,7 @@ Exp::Exp(Exp *left, Node *op, Exp *right, bool isRelop)
                 }
             }
             // Emit the comparison.
-            buffer.emit("%" + registerName + " = icmp " + icmpRelop + " " + (isSigned ? "i32" : "i8") + " %" + leftRegister + ", " + rightRegister);
+            buffer.emit("%" + registerName + " = icmp " + icmpRelop + " " + (isSigned ? "i32" : "i8") + " %" + leftRegister + ", %" + rightRegister);
             // TODO: What does this do?
         }
         else
@@ -291,6 +291,7 @@ Exp::Exp(Node *id)
     // Assign the same type and value.
     value = id->value;
     type = entryRow->type.back();
+    registerName = registerProvider.GetNewRegister();
     // TODO: Add emit to load variable
 }
 
@@ -747,7 +748,7 @@ Call::Call(Node *id, ExpList *expList)
             output::errorPrototypeMismatch(yylineno, id->value, types);
             exit(0);
         }
-        if(i < types.size() - 1)
+        if (i < types.size() - 1)
         {
             functionArgs += ",";
         }
@@ -1017,4 +1018,24 @@ void validateIfExpression(Exp *exp)
         output::errorMismatch(yylineno);
         exit(0);
     }
+}
+
+void exitFunctionDeclaration(RetType *returnType)
+{
+    // Do we have a void return?
+    if (returnType->value == "VOID")
+    {
+        // Emit return void.
+        buffer.emit("ret void");
+    }
+    else
+    {
+        // We have a different type return.
+        // Get the LLVM return type.
+        string llvmReturn = ToLLVM(returnType->value);
+        // Emit the return.
+        buffer.emit("ret " + llvmReturn + " 0");
+    }
+    // Emit the closing brace.
+    buffer.emit("}");
 }

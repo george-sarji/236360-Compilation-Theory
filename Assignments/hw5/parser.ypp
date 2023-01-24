@@ -51,7 +51,7 @@
 Program: {$$ = new Program(); } Funcs                                                              { Debugger::printProductionRule(1); exitProgram(yychar, YYEOF); }
 Funcs:                                                                      { Debugger::printProductionRule(2); }
     | FuncDecl Funcs                                                        { Debugger::printProductionRule(3); }
-FuncDecl: RetType ID LPAREN Formals RPAREN { $$ = new FuncDecl(dynamic_cast<RetType*>($1), $2, dynamic_cast<Formals*>($4)); } LBRACE OpenScope {backfillFunctionArguments(dynamic_cast<Formals*>($4)); } Statements CloseScope RBRACE         { Debugger::printProductionRule(4); }
+FuncDecl: RetType ID LPAREN Formals RPAREN { $$ = new FuncDecl(dynamic_cast<RetType*>($1), $2, dynamic_cast<Formals*>($4)); } LBRACE OpenScope {backfillFunctionArguments(dynamic_cast<Formals*>($4)); } Statements CloseScope { exitFunctionDeclaration(dynamic_cast<RetType*>($1)); } RBRACE         { Debugger::printProductionRule(4); }
 RetType: Type                                                               { Debugger::printProductionRule(5); $$ = new RetType($1); }
     | VOID                                                                  { Debugger::printProductionRule(6); $$ = new RetType($1); }
 Formals:                                                                    { Debugger::printProductionRule(7); $$ = new Formals(); }
