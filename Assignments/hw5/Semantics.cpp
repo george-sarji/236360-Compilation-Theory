@@ -349,6 +349,10 @@ Exp::Exp(Node *notNode, Exp *exp)
     // Set the type as bool, negate the boolean value.
     type = "BOOL";
     booleanValue = !exp->booleanValue;
+    registerName = registerProvider.GetNewRegister();
+    falseList = exp->trueList;
+    trueList = exp->falseList;
+    instruction = exp->instruction;
 }
 
 Exp::Exp(Type *type, Exp *exp) : Node(type->value)
