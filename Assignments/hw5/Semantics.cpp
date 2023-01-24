@@ -291,7 +291,6 @@ Exp::Exp(Node *id)
     // Assign the same type and value.
     value = id->value;
     type = entryRow->type.back();
-    registerName = registerProvider.GetNewRegister();
     // TODO: Add emit to load variable
 }
 
@@ -885,8 +884,26 @@ FuncDecl::FuncDecl(RetType *type, Node *id, Formals *formals)
     // Allocate the stack and arguments.
     buffer.emit("%stack = alloca [50 x i32]");
     buffer.emit("%args = alloca [" + to_string(arguments.size()) + " x i32]");
-
+    int argsNum = arguments.size();
     // TODO: Add register creation for all params.
+    for (int i = 0; i < arguments.size(); i++)
+    {
+        // Get a new pointer register.
+        string ptrReg = registerProvider.GetNewRegister();
+        // Emit getelementptr line for register.
+        buffer.emit("%" + ptrReg + " = getelementptr [" + to_string(argsNum) + " x i32], [" + to_string(argsNum) + " x i32]* %args, i32 0, i32 " + to_string(argsNum - i - 1));
+        // Get a new register in the case of a required zext.
+        string currentRegister = to_string(i);
+        string currentLlvmType = ToLLVM(arguments[i]->type);
+        // Do we need to perform zero extension?
+        if (currentLlvmType != "i32")
+        {
+            // Perform zero extension.
+            currentRegister = zeroExtension(currentRegister, currentLlvmType);
+        }
+        // Store the current item into the pointer.
+        buffer.emit("store i32 %" + currentRegister + ", i32* %" + ptrReg);
+    }
 }
 
 void openScope()
