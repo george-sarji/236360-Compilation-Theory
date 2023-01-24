@@ -291,14 +291,17 @@ Exp::Exp(Node *id)
     // Assign the same type and value.
     value = id->value;
     type = entryRow->type.back();
+    // TODO: Add emit to load variable
 }
 
 Exp::Exp(Node *term, string expType) : Node(term->value)
 {
+    registerName = registerProvider.GetNewRegister();
     // Int is derived from NUM.
     if (expType == "NUM")
     {
         type = "INT";
+        buffer.emit("%" + registerName + " = add i32 0," + term->value);
     }
     // Byte is derived from byte.
     if (expType == "NUM B")
@@ -312,6 +315,7 @@ Exp::Exp(Node *term, string expType) : Node(term->value)
             output::errorByteTooLarge(yylineno, term->value);
             exit(0);
         }
+        buffer.emit("%" + registerName + "= add i8 0," + term->value);
     }
     // Is it bool?
     if (expType == "BOOL")
@@ -319,10 +323,17 @@ Exp::Exp(Node *term, string expType) : Node(term->value)
         type = "BOOL";
         // Check the bool value.
         booleanValue = term->value == "true";
+        buffer.emit("%" + registerName + " = add i1 0," + to_string((int)booleanValue));
     }
     if (expType == "STRING")
     {
         type = "STRING";
+        // To get a string, we need to define a constant and get the value from the stack (getelementptr)
+        // String size is without the null terminator.
+        string stringSize = to_string(term->value.size() - 1);
+        // We want to add the string without the FanC null terminator but with an explicit terminate.
+        buffer.emitGlobal("@" + registerName + " = constant [" + stringSize + " x i8] c\"" + term->value.substr(1, term->value.size() - 2) + "\\00\"");
+        buffer.emit("%" + registerName + " = getelementptr [" + stringSize + " x i8], [" + stringSize + " x i8]* @" + registerName + ", i8 0, i8 0");
     }
 }
 
