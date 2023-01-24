@@ -302,7 +302,6 @@ Exp::Exp(Node *id)
     // Assign the same type and value.
     value = id->value;
     type = entryRow->type.back();
-    // TODO: Add emit to load variable
     registerName = loadVariableToRegister(entryRow->offset, type);
 }
 
@@ -362,6 +361,8 @@ Exp::Exp(Node *notNode, Exp *exp)
     type = "BOOL";
     booleanValue = !exp->booleanValue;
     registerName = registerProvider.GetNewRegister();
+    // Emit the addition.
+    buffer.emit("%" + registerName + " = add i1 1, %" + exp->registerName);
     falseList = exp->trueList;
     trueList = exp->falseList;
     instruction = exp->instruction;
@@ -379,6 +380,7 @@ Exp::Exp(Type *type, Exp *exp) : Node(type->value)
     }
     Debugger::print("Exp validatedw with type " + type->value + " and exp type " + exp->type);
     this->type = type->value;
+    // TODO: Add register usage here.
     registerName = registerProvider.GetNewRegister();
     trueList = exp->trueList;
     falseList = exp->falseList;
@@ -387,6 +389,7 @@ Exp::Exp(Type *type, Exp *exp) : Node(type->value)
 
 Exp::Exp(Exp *exp1, Exp *exp2, Exp *exp3)
 {
+    // TODO: Check usage and implementation
     Debugger::print("Entered trinary operator!!");
     Debugger::print("Exp1: " + exp1->type + ". Exp2: " + exp2->type + ". Exp3: " + exp3->type);
     // We need to check if exp1 is boolean.
@@ -652,6 +655,7 @@ Statement::Statement(Node *node)
         exit(0);
     }
     Debugger::print("Received end of stateemtn");
+    // TODO: Add backpatching and validate.
     int bpLocation = buffer.emit("br label @");
     if (node->value == "break")
     {
@@ -898,7 +902,6 @@ FuncDecl::FuncDecl(RetType *type, Node *id, Formals *formals)
     buffer.emit("%stack = alloca [50 x i32]");
     buffer.emit("%args = alloca [" + to_string(arguments.size()) + " x i32]");
     int argsNum = arguments.size();
-    // TODO: Add register creation for all params.
     for (int i = 0; i < arguments.size(); i++)
     {
         // Get a new pointer register.
@@ -968,6 +971,7 @@ void enterLoop()
 {
     Debugger::print("Entering loop");
     loopsCount++;
+    // TODO: Add backpatching.
 }
 
 void exitLoop()
