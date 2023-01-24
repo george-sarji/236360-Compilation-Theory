@@ -583,7 +583,8 @@ Statement::Statement(Exp *exp)
                 string extendedRegister = zeroExtension(exp->registerName, "i8");
                 buffer.emit("ret i32 %" + extendedRegister);
             }
-            else {
+            else
+            {
                 Debugger::print("Shouldnt reach here!!!!");
             }
         }
@@ -602,6 +603,13 @@ Statement::Statement(Exp *exp, Statement *statement)
         exit(0);
     }
     // Expression is valid.
+    breakList = vector<pair<int, BranchLabelIndex>>();
+    continueList = vector<pair<int, BranchLabelIndex>>();
+    if (statement != nullptr)
+    {
+        breakList = statement->breakList;
+        continueList = statement->continueList;
+    }
 }
 
 Statement::Statement(Exp *exp, Statement *statement1, Statement *statement2)
