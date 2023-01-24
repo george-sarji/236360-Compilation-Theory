@@ -207,7 +207,7 @@ Exp::Exp(Exp *left, Node *op, Exp *right, bool isRelop)
                 }
             }
             // Emit the comparison.
-            buffer.emit("%" + registerName + " = icmp " + icmpRelop + " " + (isSigned ? "i32" : "i8") + " %" + leftRegister + ", %" + rightRegister);
+            buffer.emit("%" + registerName + " = icmp " + icmpRelop + " " + (isSigned ? "i32" : "i8") + " %" + leftRegister + ", " + rightRegister);
             // TODO: What does this do?
         }
         else
@@ -291,6 +291,7 @@ Exp::Exp(Node *id)
     // Assign the same type and value.
     value = id->value;
     type = entryRow->type.back();
+    registerName = registerProvider.GetNewRegister();
     // TODO: Add emit to load variable
 }
 
