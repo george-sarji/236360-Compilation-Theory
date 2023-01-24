@@ -13,6 +13,9 @@ string currentScope = "";
 CodeBuffer &buffer = CodeBuffer::instance();
 RegisterProvider registerProvider;
 
+// Used for loading variables into registers.
+int currentArguments = 0;
+
 string ToLLVM(string type)
 {
     if (type == "VOID")
@@ -291,8 +294,8 @@ Exp::Exp(Node *id)
     // Assign the same type and value.
     value = id->value;
     type = entryRow->type.back();
-    registerName = registerProvider.GetNewRegister();
     // TODO: Add emit to load variable
+    registerName = loadVariableToRegister(entryRow->offset, type);
 }
 
 Exp::Exp(Node *term, string expType) : Node(term->value)
@@ -849,6 +852,7 @@ FuncDecl::FuncDecl(RetType *type, Node *id, Formals *formals)
             }
         }
     }
+    currentArguments = formals->declarations.size();
     // We don't have any shadowing. That means we have a valid call.
     // Let's prepare the types array.
     vector<string> types;
@@ -1038,9 +1042,10 @@ void exitFunctionDeclaration(RetType *returnType)
     }
     // Emit the closing brace.
     buffer.emit("}");
+    currentArguments = 0;
 }
 
-string loadVariableToRegister(int offset, string type, int functionArgsNum)
+string loadVariableToRegister(int offset, string type)
 {
     // Get a new register and a new pointer.
     string registerName = registerProvider.GetNewRegister();
@@ -1055,7 +1060,7 @@ string loadVariableToRegister(int offset, string type, int functionArgsNum)
     {
         // Defined as a function parameter.
         // Emit a fetch according to function arguments.
-        buffer.emit("%" + ptrRegister + " = getelementptr [" + to_string(functionArgsNum) + " x i32], [" + to_string(functionArgsNum) + " x i32]* %args, i32 0, i32 " + to_string(functionArgsNum + offset));
+        buffer.emit("%" + ptrRegister + " = getelementptr [" + to_string(currentArguments) + " x i32], [" + to_string(currentArguments) + " x i32]* %args, i32 0, i32 " + to_string(currentArguments + offset));
     }
     // Load the value into the register.
     buffer.emit("%" + registerName + " = load i32, i32* %" + ptrRegister);
