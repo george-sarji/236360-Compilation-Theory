@@ -471,9 +471,36 @@ Statement::Statement(Type *type, Node *id, Exp *exp)
     Debugger::print("Entered statement with type " + type->value + " and expression type " + exp->type);
     if (type->value == exp->type || (type->value == "INT" && exp->type == "BYTE"))
     {
+        breakList = vector<pair<int, BranchLabelIndex>>();
+        continueList = vector<pair<int, BranchLabelIndex>>();
         // Valid expression. Add to the symbol table.
         Debugger::print("Adding new symbol after types matched.");
-        table->addNewSymbol(id->value, type->value);
+        int offset = table->addNewSymbol(id->value, type->value);
+        registerName = registerProvider.GetNewRegister();
+        // We need to get a new register for zero extensions if needed.
+        string newRegister = exp->registerName;
+        string llvmType = ToLLVM(type->value);
+        // Do we need to perform zero extensions?
+        if (type->value == "INT" && exp->type == "BYTE")
+        {
+            // Perform zero extension.
+            newRegister = zeroExtension(exp->registerName, "i8");
+        }
+        // Emit start of variable (add 0)
+        buffer.emit("%" + registerName + " = add " + llvmType + " 0,%" + newRegister);
+        // Get a pointer register.
+        string ptrRegister = registerProvider.GetNewRegister();
+        // Get stack element.
+        buffer.emit("%" + ptrRegister + " = getelementptr [50 x i32], [50 x i32]* %stack, i32 0, i32 " + to_string(offset));
+        newRegister = registerName;
+        // Do we need to perform another zero extension?
+        if (llvmType != "i32")
+        {
+            // Perform zero extension.
+            newRegister = zeroExtension(registerName, llvmType);
+        }
+        // Store the variable into the stack.
+        buffer.emit("store i32 %" + newRegister + ", i32* %" + ptrRegister);
     }
     else
     {
