@@ -570,6 +570,22 @@ Statement::Statement(Exp *exp)
             }
             // We have a valid scope.
             value = "VOID";
+            // Do we have the same type?
+            if (row->type.back() == exp->type)
+            {
+                // We do - no need for zero extension.
+                string llvmType = ToLLVM(exp->type);
+                buffer.emit("ret " + llvmType + " %" + exp->registerName);
+            }
+            else if (row->type.back() == "INT" && exp->type == "BYTE")
+            {
+                // We need to perform a zero extension.
+                string extendedRegister = zeroExtension(exp->registerName, "i8");
+                buffer.emit("ret i32 %" + extendedRegister);
+            }
+            else {
+                Debugger::print("Shouldnt reach here!!!!");
+            }
         }
     }
 }
