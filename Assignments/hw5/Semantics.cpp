@@ -527,6 +527,8 @@ Statement::Statement(Node *id, Exp *exp)
     {
         // We have a valid cast.
         // We need to update the symbol.
+        // TODO: Add data saving to stack and add to registerName
+        instruction = exp->instruction;
     }
     else
     {
