@@ -864,12 +864,13 @@ FuncDecl::FuncDecl(RetType *type, Node *id, Formals *formals)
     Debugger::print("New current scope: " + currentScope);
 
     // We need to create the parameters line for LLVM.
+    auto arguments = formals->declarations;
     string argumentsString = "(";
-    for (int i = 0; i < types.size() - 1; i++)
+    for (int i = 0; i < arguments.size(); i++)
     {
         argumentsString += ToLLVM(types[i]);
         // Do we need to add a comma?
-        if (i < types.size() - 2)
+        if (i < arguments.size() - 1)
         {
             argumentsString += ",";
         }
@@ -882,7 +883,7 @@ FuncDecl::FuncDecl(RetType *type, Node *id, Formals *formals)
     buffer.emit("define " + llvmReturn + " @" + id->value + argumentsString + "{");
     // Allocate the stack and arguments.
     buffer.emit("%stack = alloca [50 x i32]");
-    buffer.emit("%args = alloca [" + to_string(types.size()) + " x i32]");
+    buffer.emit("%args = alloca [" + to_string(arguments.size()) + " x i32]");
 
     // TODO: Add register creation for all params.
 }
