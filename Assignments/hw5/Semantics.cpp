@@ -732,7 +732,7 @@ Call::Call(Node *id, ExpList *expList)
         // Check the current expression with the current type.
         if (expressions[i]->type == types[i])
         {
-            functionArgs += ToLLVM(expressions[i]->type) + " %" + expressions[i]->registerName + ",";
+            functionArgs += ToLLVM(expressions[i]->type) + " %" + expressions[i]->registerName;
         }
         else
         {
@@ -746,6 +746,10 @@ Call::Call(Node *id, ExpList *expList)
             // We have a mismatch in arguments.
             output::errorPrototypeMismatch(yylineno, id->value, types);
             exit(0);
+        }
+        if(i < types.size() - 1)
+        {
+            functionArgs += ",";
         }
     }
     // Close the function arguments call.
