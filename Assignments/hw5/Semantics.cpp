@@ -967,11 +967,27 @@ Program::Program() : Node("Program")
     buffer.emitGlobal("}");
 }
 
+M::M()
+{
+    instruction = buffer.genLabel();
+}
+
+N::N()
+{
+    location = buffer.emit("br label @");
+    instruction = buffer.genLabel();
+}
+
+P::P(Exp *exp)
+{
+    location = buffer.emit("br i1 %" + exp->registerName + ", label @, label @");
+    instruction = buffer.genLabel();
+}
+
 void enterLoop()
 {
     Debugger::print("Entering loop");
     loopsCount++;
-    // TODO: Add backpatching.
 }
 
 void exitLoop()
