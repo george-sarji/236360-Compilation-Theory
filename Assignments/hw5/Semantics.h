@@ -232,5 +232,6 @@ string ToLLVM(string type);
 string zeroExtension(string registerName, string llvmType);
 void exitFunctionDeclaration(RetType* returnType);
 string loadVariableToRegister(int offset, string type);
+string truncateRegister(string registerName, string llvmType);
 
 #endif

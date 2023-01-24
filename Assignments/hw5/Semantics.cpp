@@ -48,6 +48,14 @@ string zeroExtension(string registerName, string llvmType)
     return destinationRegister;
 }
 
+string truncateRegister(string registerName, string llvmType)
+{
+    Debugger::print("Truncating register " + registerName + " from type i32 to " + llvmType);
+    string destinationRegister = registerProvider.GetNewRegister();
+    buffer.emit("%" + destinationRegister + " = trunc i32 %" + registerName + " to " + llvmType);
+    return destinationRegister;
+}
+
 Node::Node(string value) : value(), registerName(""), instruction("")
 {
     // Check for known types.
@@ -1066,10 +1074,11 @@ string loadVariableToRegister(int offset, string type)
     buffer.emit("%" + registerName + " = load i32, i32* %" + ptrRegister);
     // Get the expected LLVM type.
     string llvmType = ToLLVM(type);
-    // Do we need to perform a zero extension?
+    // Do we need to perform a truncation to fit the data?
     if (llvmType != "i32")
     {
-        registerName = zeroExtension(registerName, llvmType);
+        // Perform data truncation.
+        registerName = truncateRegister(registerName, llvmType);
     }
     // Return the new register containing the data.
     return registerName;
