@@ -117,6 +117,13 @@ public:
     Exp(Exp *exp1, Exp *exp2, Exp *exp3);
 };
 
+class P : public Node
+{
+public:
+    int location;
+    P(Exp *exp);
+};
+
 class ExpList : public Node
 {
 public:
@@ -230,7 +237,7 @@ void exitProgram(int yychar, int eof);
 void validateIfExpression(Exp *exp);
 string ToLLVM(string type);
 string zeroExtension(string registerName, string llvmType);
-void exitFunctionDeclaration(RetType* returnType);
+void exitFunctionDeclaration(RetType *returnType);
 string loadVariableToRegister(int offset, string type);
 string truncateRegister(string registerName, string llvmType);
 
