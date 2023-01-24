@@ -1039,3 +1039,33 @@ void exitFunctionDeclaration(RetType *returnType)
     // Emit the closing brace.
     buffer.emit("}");
 }
+
+string loadVariableToRegister(int offset, string type, int functionArgsNum)
+{
+    // Get a new register and a new pointer.
+    string registerName = registerProvider.GetNewRegister();
+    string ptrRegister = registerProvider.GetNewRegister();
+    // Are we inside a function as a variable?
+    if (offset >= 0)
+    {
+        // We are. Emit a regular getelementptr
+        buffer.emit("%" + ptrRegister + " = getelementptr [50 x i32], [50 x i32]* %stack, i32 0, i32 " + to_string(offset));
+    }
+    else if (offset < 0)
+    {
+        // Defined as a function parameter.
+        // Emit a fetch according to function arguments.
+        buffer.emit("%" + ptrRegister + " = getelementptr [" + to_string(functionArgsNum) + " x i32], [" + to_string(functionArgsNum) + " x i32]* %args, i32 0, i32 " + to_string(functionArgsNum + offset));
+    }
+    // Load the value into the register.
+    buffer.emit("%" + registerName + " = load i32, i32* %" + ptrRegister);
+    // Get the expected LLVM type.
+    string llvmType = ToLLVM(type);
+    // Do we need to perform a zero extension?
+    if (llvmType != "i32")
+    {
+        registerName = zeroExtension(registerName, llvmType);
+    }
+    // Return the new register containing the data.
+    return registerName;
+}
