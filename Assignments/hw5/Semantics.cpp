@@ -985,6 +985,7 @@ Program::Program() : Node("Program")
 M::M()
 {
     instruction = buffer.genLabel();
+    Debugger::print("M marker generated label " + instruction);
 }
 
 N::N()
@@ -1086,6 +1087,10 @@ void validateIfExpression(Exp *exp)
         output::errorMismatch(yylineno);
         exit(0);
     }
+    // Emit the required br here.
+    int location = buffer.emit("br i1 %" + exp->registerName + ", label @, label @");
+    exp->trueList = buffer.makelist({location, FIRST});
+    exp->falseList = buffer.makelist({location, SECOND});
 }
 
 void exitFunctionDeclaration(RetType *returnType)
@@ -1144,4 +1149,18 @@ Node *openWhile(Exp *exp)
 {
     Node *node = new P(exp);
     return node;
+}
+
+void backpatchIf(M *marker, Exp *exp)
+{
+    // Emit a new jump.
+    int location = buffer.emit("br label @");
+    // Generate a new label for if statement end.
+    string endLabel = buffer.genLabel();
+    // Backpatch the truelist to the marker
+    buffer.bpatch(exp->trueList, marker->instruction);
+    // Backpatch the falselist to outside the if.
+    buffer.bpatch(exp->falseList, endLabel);
+    // Patch the temp location wit hthe end label.
+    buffer.bpatch(buffer.makelist({location, FIRST}), endLabel);
 }
