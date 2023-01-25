@@ -82,6 +82,7 @@ public:
 
 // Shell due to circular dependency.
 class Call;
+class P;
 
 class Exp : public Node
 {
@@ -97,7 +98,7 @@ public:
     explicit Exp(Exp *expression, bool validateExpression = false);
 
     // Exp: Exp BINOP Exp, Exp AND/OR Exp, Exp RELOP Exp
-    Exp(Exp *left, Node *op, Exp *right, bool isRelop);
+    Exp(Exp *left, Node *op, Exp *right, bool isRelop, P* marker = nullptr);
 
     // Exp: ID
     explicit Exp(Node *id);

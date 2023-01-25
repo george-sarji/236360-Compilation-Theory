@@ -91,10 +91,10 @@ Exp: LPAREN Exp RPAREN                                                      { De
     | TRUE                                                                  { Debugger::printProductionRule(40); $$ = new Exp($1, "BOOL"); }
     | FALSE                                                                 { Debugger::printProductionRule(41); $$ = new Exp($1, "BOOL"); }
     | NOT Exp                                                               { Debugger::printProductionRule(42); $$ = new Exp($1, dynamic_cast<Exp*>($2)); }
-    | Exp AND Exp                                                           { Debugger::printProductionRule(43); $$ = new Exp(dynamic_cast<Exp*>($1), $2, dynamic_cast<Exp*>($3), false); }
-    | Exp OR Exp                                                            { Debugger::printProductionRule(44); $$ = new Exp(dynamic_cast<Exp*>($1), $2, dynamic_cast<Exp*>($3), false); }
-    | Exp EQ_RELOP Exp                                                      { Debugger::printProductionRule(45); $$ = new Exp(dynamic_cast<Exp*>($1), $2, dynamic_cast<Exp*>($3), true); }
-    | Exp RELOP Exp                                                         { Debugger::printProductionRule(45); $$ = new Exp(dynamic_cast<Exp*>($1), $2, dynamic_cast<Exp*>($3), true); }
+    | Exp AND { $$ = new P(dynamic_cast<Exp*>($1)); } Exp                                                           { Debugger::printProductionRule(43); $$ = new Exp(dynamic_cast<Exp*>($1), $2, dynamic_cast<Exp*>($4), false, dynamic_cast<P*>($3)); }
+    | Exp OR { $$ = new P(dynamic_cast<Exp*>($1)); } Exp                                                            { Debugger::printProductionRule(44); $$ = new Exp(dynamic_cast<Exp*>($1), $2, dynamic_cast<Exp*>($4), false, dynamic_cast<P*>($3)); }
+    | Exp EQ_RELOP { $$ = new P(dynamic_cast<Exp*>($1)); } Exp                                                      { Debugger::printProductionRule(45); $$ = new Exp(dynamic_cast<Exp*>($1), $2, dynamic_cast<Exp*>($4), true, dynamic_cast<P*>($3)); }
+    | Exp RELOP { $$ = new P(dynamic_cast<Exp*>($1)); } Exp                                                         { Debugger::printProductionRule(45); $$ = new Exp(dynamic_cast<Exp*>($1), $2, dynamic_cast<Exp*>($4), true, dynamic_cast<P*>($3)); }
     | LPAREN Type RPAREN Exp                                                { Debugger::printProductionRule(46); $$ = new Exp(dynamic_cast<Type*>($2), dynamic_cast<Exp*>($4)); }
     | Exp IF LPAREN Exp RPAREN ELSE Exp                                     { Debugger::printProductionRule(99); $$ = new Exp(dynamic_cast<Exp*>($1), dynamic_cast<Exp*>($4), dynamic_cast<Exp*>($7)); }
 
