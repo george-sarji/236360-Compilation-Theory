@@ -1169,12 +1169,6 @@ string loadVariableToRegister(int offset, string type)
     return registerName;
 }
 
-Node *openWhile(Exp *exp)
-{
-    Node *node = new P(exp);
-    return node;
-}
-
 void backpatchIf(M *marker, Exp *exp)
 {
     // Emit a new jump.
