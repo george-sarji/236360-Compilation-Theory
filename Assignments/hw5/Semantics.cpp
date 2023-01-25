@@ -985,14 +985,12 @@ Program::Program() : Node("Program")
 M::M()
 {
     instruction = buffer.genLabel();
-    Debugger::print("M marker generated label " + instruction);
 }
 
 N::N()
 {
     location = buffer.emit("br label @");
     instruction = buffer.genLabel();
-    Debugger::print("N marker generated label " + instruction);
 }
 
 P::P(Exp *exp)
@@ -1152,22 +1150,18 @@ void backpatchIf(M *marker, Exp *exp)
 {
     // We are after the if (outside the braces).
     // Generate a label to jump to for falselist.
-    Debugger::print("Backpatching if statement!!");
     int location = buffer.emit("br label @");
     string endIf = buffer.genLabel();
-    Debugger::print("Backpatching label " + endIf);
     // Backpatch truelist to marker.
     buffer.bpatch(exp->trueList, marker->instruction);
     // Backpatch false list to endif.
     buffer.bpatch(exp->falseList, endIf);
-    buffer.bpatch(buffer.makelist({location, FIRST}), endIf);
 }
 
 void backpatchIfElse(M *ifMarker, N *elseMarker, Exp *exp)
 {
     // We are after the if else statement.
     // Generate a label to jump to.
-    Debugger::print("Backpatching if else statement!!");
     int location = buffer.emit("br label @");
     string statementEnd = buffer.genLabel();
     // Backpatch truelist to if marker.
@@ -1176,7 +1170,5 @@ void backpatchIfElse(M *ifMarker, N *elseMarker, Exp *exp)
     buffer.bpatch(exp->falseList, elseMarker->instruction);
     // Backpatch else marker and end label to out of scope.
     buffer.bpatch(buffer.makelist({elseMarker->location, FIRST}), statementEnd);
-    Debugger::print("Backpatching else marker label " + elseMarker->location);
     buffer.bpatch(buffer.makelist({location, FIRST}), statementEnd);
-    Debugger::print("Backpatching statement end label " + statementEnd);
 }
