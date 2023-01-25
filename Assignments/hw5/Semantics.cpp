@@ -125,6 +125,7 @@ Exp::Exp(Exp *left, Node *op, Exp *right, bool isRelop)
     registerName = registerProvider.GetNewRegister();
     trueList = vector<pair<int, BranchLabelIndex>>();
     falseList = vector<pair<int, BranchLabelIndex>>();
+    string instructionEnd = "";
     if (left->type == "BOOL" && right->type == "BOOL")
     {
         // We know for granted the result is a bool.
@@ -219,7 +220,15 @@ Exp::Exp(Exp *left, Node *op, Exp *right, bool isRelop)
             }
             // Emit the comparison.
             buffer.emit("%" + registerName + " = icmp " + icmpRelop + " " + (isSigned ? "i32" : "i8") + " %" + leftRegister + ", %" + rightRegister);
-            // TODO: What does this do?
+            // Add instruction end according to updated condition
+            if (right->instruction != "")
+            {
+                instructionEnd = right->instruction;
+            }
+            else
+            {
+                instructionEnd = left->instruction;
+            }
         }
         else
         {
@@ -283,6 +292,12 @@ Exp::Exp(Exp *left, Node *op, Exp *right, bool isRelop)
         // Not numbers nor booleans. According to regulations, mismatch.
         output::errorMismatch(yylineno);
         exit(0);
+    }
+
+    // Do we have instruction end for backpatching?
+    if (instructionEnd != "")
+    {
+        instruction = instructionEnd;
     }
 }
 
