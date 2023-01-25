@@ -7,8 +7,11 @@ bool SymbolTable::isDefined(string symbol, bool funcSearch)
     Debugger::print("Checking table for symbol " + symbol);
     // We need to go over all of the scopes and check in each scope.
     // We will iterate in reverse, as the top scope is pushed to the back.
+    if (scopes.size() == 0)
+        Debugger::print("Scopes is null!");
     for (auto it = scopes.begin(); it != scopes.end(); it++)
     {
+        Debugger::print("Checking in loop");
         // Check in the current scope.
         if ((*it)->isDefined(symbol, funcSearch))
             return true;
@@ -95,17 +98,20 @@ void ScopeTable::addFuncRow(string name, vector<string> types, int offset)
 
 void SymbolTable::addScope()
 {
+    Debugger::print("Adding new scope to symbol table");
     // Push a new offset.
     offsets.push_back(offsets.back());
     // Create a new scope table.
     shared_ptr<ScopeTable> table = std::make_shared<ScopeTable>();
     // Push the scope table in the beginning of the scopes vector.
     scopes.push_back(table);
-    Debugger::print("Added new scope to symbol table with base offset: " + to_string(offsets.back()));
+    Debugger::print("Base offset: " + to_string(offsets.back()));
 }
 
 void SymbolTable::dropScope()
 {
+    Debugger::print("Dropping scope from symbol table----------------------");
+    Debugger::print("We have " + to_string(scopes.size()) + " scopes open!");
     // Print scope ending.
     // output::endScope();
     // Get the top scope.
