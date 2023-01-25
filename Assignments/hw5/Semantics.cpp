@@ -1145,30 +1145,3 @@ Node *openWhile(Exp *exp)
     Node *node = new P(exp);
     return node;
 }
-
-void backpatchIf(M *marker, Exp *exp)
-{
-    // We are after the if (outside the braces).
-    // Generate a label to jump to for falselist.
-    int location = buffer.emit("br label @");
-    string endIf = buffer.genLabel();
-    // Backpatch truelist to marker.
-    buffer.bpatch(exp->trueList, marker->instruction);
-    // Backpatch false list to endif.
-    buffer.bpatch(exp->falseList, endIf);
-}
-
-void backpatchIfElse(M *ifMarker, N *elseMarker, Exp *exp)
-{
-    // We are after the if else statement.
-    // Generate a label to jump to.
-    int location = buffer.emit("br label @");
-    string statementEnd = buffer.genLabel();
-    // Backpatch truelist to if marker.
-    buffer.bpatch(exp->trueList, ifMarker->instruction);
-    // Backpatch falselist to else marker.
-    buffer.bpatch(exp->falseList, elseMarker->instruction);
-    // Backpatch else marker and end label to out of scope.
-    buffer.bpatch(buffer.makelist({elseMarker->location, FIRST}), statementEnd);
-    buffer.bpatch(buffer.makelist({location, FIRST}), statementEnd);
-}

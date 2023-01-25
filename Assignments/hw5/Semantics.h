@@ -243,7 +243,5 @@ void exitFunctionDeclaration(RetType *returnType);
 string loadVariableToRegister(int offset, string type);
 string truncateRegister(string registerName, string llvmType);
 Node* openWhile(Exp* exp);
-void backpatchIf(M* marker, Exp* exp);
-void backpatchIfElse(M* ifLabel, N* elseLabel, Exp* exp);
 
 #endif
