@@ -234,7 +234,7 @@ void backfillFunctionArguments(Formals *formals);
 void openScope();
 void closeScope();
 void enterLoop();
-void exitLoop();
+void exitLoop(N* whileCondition, P* innerMarker, Statement* statement);
 void exitProgram(int yychar, int eof);
 void validateIfExpression(Exp *exp);
 string ToLLVM(string type);
@@ -242,5 +242,6 @@ string zeroExtension(string registerName, string llvmType);
 void exitFunctionDeclaration(RetType *returnType);
 string loadVariableToRegister(int offset, string type);
 string truncateRegister(string registerName, string llvmType);
+Node* openWhile(Exp* exp);
 
 #endif

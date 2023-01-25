@@ -990,10 +990,31 @@ void enterLoop()
     loopsCount++;
 }
 
-void exitLoop()
+void exitLoop(N *whileCondition, P *innerMarker, Statement *statement)
 {
     Debugger::print("Exiting loop");
     loopsCount--;
+    // Emit a label for the exit.
+    int labelLocation = buffer.emit("br label @");
+    string label = buffer.genLabel();
+    // Backpatch to the condition of the while.
+    buffer.bpatch(buffer.makelist({whileCondition->location, FIRST}), whileCondition->instruction);
+    // Backpatch to the inner marker if the condition is true.
+    buffer.bpatch(buffer.makelist({innerMarker->location, FIRST}), innerMarker->instruction);
+    // Backpatch jump outside if condition is false.
+    buffer.bpatch(buffer.makelist({innerMarker->location, FIRST}), label);
+    // Backpatch jump back to conditional on end of loop.
+    buffer.bpatch(buffer.makelist({labelLocation, FIRST}), whileCondition->instruction);
+    // Backpatch the statement's continue list to the while's condition.
+    if (!statement->continueList.empty())
+    {
+        buffer.bpatch(statement->continueList, whileCondition->instruction);
+    }
+    // Backpatch the statement's break list to outside the loop.
+    if (!statement->breakList.empty())
+    {
+        buffer.bpatch(statement->breakList, label);
+    }
     // TODO: Add backpatching for loops according to markers and statement
 }
 
@@ -1102,4 +1123,10 @@ string loadVariableToRegister(int offset, string type)
     }
     // Return the new register containing the data.
     return registerName;
+}
+
+Node *openWhile(Exp *exp)
+{
+    Node *node = new P(exp);
+    return node;
 }
