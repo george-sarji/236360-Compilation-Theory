@@ -170,6 +170,15 @@ Exp::Exp(Exp *left, Node *op, Exp *right, bool isRelop, P *marker)
         else if (op->value == "or")
         {
             booleanValue = left->booleanValue || right->booleanValue;
+            int leftTrue = buffer.emit("br label @");
+            string leftTrueLabel = buffer.genLabel();
+            int rightTrue = buffer.emit("br label @");
+            instructionEnd = buffer.genLabel();
+            buffer.emit("%" + registerName + " = phi i1 [%" + right->registerName + ", %" + instruction + "],[1, %" + leftTrueLabel + "]");
+            buffer.bpatch(buffer.makelist({marker->location, FIRST}), leftTrueLabel);
+            buffer.bpatch(buffer.makelist({marker->location, SECOND}), marker->instruction);
+            buffer.bpatch(buffer.makelist({leftTrue, FIRST}), instructionEnd);
+            buffer.bpatch(buffer.makelist({rightTrue, FIRST}), instructionEnd);
         }
         else
         {
