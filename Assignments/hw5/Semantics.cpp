@@ -1164,3 +1164,18 @@ void backpatchIf(M *marker, Exp *exp)
     // Patch the temp location wit hthe end label.
     buffer.bpatch(buffer.makelist({location, FIRST}), endLabel);
 }
+
+void backpatchIfElse(M* ifMarker, N* elseMarker, Exp* exp)
+{
+    // We are outside the if else body.
+    // Generate labels for exit.
+    int endLocation = buffer.emit("br label @");
+    string endLabel = buffer.genLabel();
+    // Backpatch truelist to if body.
+    buffer.bpatch(exp->trueList, ifMarker->instruction);
+    // Backpatch falselist to else body.
+    buffer.bpatch(exp->falseList, elseMarker->instruction);
+    // Backpatch else exit to outside.
+    buffer.bpatch(buffer.makelist({elseMarker->location, FIRST}), endLabel);
+    buffer.bpatch(buffer.makelist({endLocation, FIRST}), endLabel);
+}
