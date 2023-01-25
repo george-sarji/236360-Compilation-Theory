@@ -94,7 +94,7 @@ public:
     vector<pair<int, BranchLabelIndex>> falseList;
 
     // Exp: LPAREN Exp RPAREN
-    explicit Exp(Exp *expression);
+    explicit Exp(Exp *expression, bool validateExpression = false);
 
     // Exp: Exp BINOP Exp, Exp AND/OR Exp, Exp RELOP Exp
     Exp(Exp *left, Node *op, Exp *right, bool isRelop);
@@ -236,7 +236,6 @@ void closeScope();
 void enterLoop();
 void exitLoop(N* whileCondition, P* innerMarker, Statement* statement);
 void exitProgram(int yychar, int eof);
-void validateIfExpression(Exp *exp);
 string ToLLVM(string type);
 string zeroExtension(string registerName, string llvmType);
 void exitFunctionDeclaration(RetType *returnType);

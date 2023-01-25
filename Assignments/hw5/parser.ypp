@@ -98,7 +98,7 @@ Exp: LPAREN Exp RPAREN                                                      { De
     | LPAREN Type RPAREN Exp                                                { Debugger::printProductionRule(46); $$ = new Exp(dynamic_cast<Type*>($2), dynamic_cast<Exp*>($4)); }
     | Exp IF LPAREN Exp RPAREN ELSE Exp                                     { Debugger::printProductionRule(99); $$ = new Exp(dynamic_cast<Exp*>($1), dynamic_cast<Exp*>($4), dynamic_cast<Exp*>($7)); }
 
-ExpIf: Exp { validateIfExpression(dynamic_cast<Exp*>($1)); $$ = $1;}
+ExpIf: Exp { $$ = new Exp(dynamic_cast<Exp*>($1), true); }
 
 OpenScope: { openScope(); }
 CloseScope: { closeScope(); }

@@ -91,7 +91,7 @@ Formals::Formals(FormalsList *list)
     declarations = vector<FormalDecl *>(list->declarations);
 }
 
-Exp::Exp(Exp *expression)
+Exp::Exp(Exp *expression, bool validateExpression)
 {
     // Same resolution as given expression.
     type = expression->type;
@@ -102,6 +102,20 @@ Exp::Exp(Exp *expression)
     falseList = expression->falseList;
     instruction = expression->instruction;
     registerName = expression->registerName;
+    if (validateExpression)
+    {
+        // We need to validate the expression.
+        // Check if the expression is bool.
+        if (type != "BOOL")
+        {
+            output::errorMismatch(yylineno);
+            exit(0);
+        }
+        // Emit the required br here.
+        int location = buffer.emit("br i1 %" + registerName + ", label @, label @");
+        trueList = buffer.makelist(pair<int, BranchLabelIndex>(location, FIRST));
+        falseList = buffer.makelist(pair<int, BranchLabelIndex>(location, SECOND));
+    }
 }
 
 Exp::Exp(Call *call)
@@ -1077,20 +1091,6 @@ void exitProgram(int yychar, int eof)
     buffer.printGlobalBuffer();
     buffer.printCodeBuffer();
     closeScope();
-}
-
-void validateIfExpression(Exp *exp)
-{
-    // Check if the expression is bool.
-    if (exp->type != "BOOL")
-    {
-        output::errorMismatch(yylineno);
-        exit(0);
-    }
-    // Emit the required br here.
-    int location = buffer.emit("br i1 %" + exp->registerName + ", label @, label @");
-    exp->trueList = buffer.makelist({location, FIRST});
-    exp->falseList = buffer.makelist({location, SECOND});
 }
 
 void exitFunctionDeclaration(RetType *returnType)
