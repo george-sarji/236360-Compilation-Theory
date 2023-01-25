@@ -68,8 +68,8 @@ Statement: LBRACE OpenScope Statements CloseScope RBRACE                        
     | Call SC                                                               { Debugger::printProductionRule(18); $$ = new Statement(dynamic_cast<Call*>($1)); }
     | RETURN SC                                                             { Debugger::printProductionRule(19); $$ = new Statement(); }
     | RETURN Exp SC                                                         { Debugger::printProductionRule(20); $$ = new Statement(dynamic_cast<Exp*>($2)); }
-    | IF LPAREN ExpIf RPAREN OpenScope Statement %prec IF                               { Debugger::printProductionRule(21); $$ = new Statement(dynamic_cast<Exp*>($3), dynamic_cast<Statement*>($6)); closeScope(); }
-    | IF LPAREN ExpIf RPAREN OpenScope Statement ELSE {closeScope(); } OpenScope Statement CloseScope                         { Debugger::printProductionRule(22); $$ = new Statement(dynamic_cast<Exp*>($3), dynamic_cast<Statement*>($6), dynamic_cast<Statement*>($8)); }
+    | IF LPAREN ExpIf RPAREN OpenScope M Statement %prec IF                               { Debugger::printProductionRule(21); $$ = new Statement(dynamic_cast<Exp*>($3), dynamic_cast<Statement*>($7)); closeScope(); backpatchIf(dynamic_cast<M*>($6), dynamic_cast<Exp*>($3)); }
+    | IF LPAREN ExpIf RPAREN OpenScope M Statement ELSE {closeScope(); } OpenScope Statement CloseScope                         { Debugger::printProductionRule(22); $$ = new Statement(dynamic_cast<Exp*>($3), dynamic_cast<Statement*>($7), dynamic_cast<Statement*>($9)); }
     | WHILE LPAREN N ExpIf RPAREN { $$ = openWhile(dynamic_cast<Exp*>($4)); } OpenScope { enterLoop(); } Statement { exitLoop(dynamic_cast<N*>($3), dynamic_cast<P*>($6), dynamic_cast<Statement*>($9)); } CloseScope                                     { Debugger::printProductionRule(23); $$ = new Statement(dynamic_cast<Exp*>($4), dynamic_cast<Statement*>($9)); }
     | BREAK SC                                                              { Debugger::printProductionRule(24); $$ = new Statement($1); }
     | CONTINUE SC                                                           { Debugger::printProductionRule(25); $$ = new Statement($1); }
@@ -103,6 +103,7 @@ ExpIf: Exp { validateIfExpression(dynamic_cast<Exp*>($1)); $$ = $1;}
 OpenScope: { openScope(); }
 CloseScope: { closeScope(); }
 N: { $$ = new N(); }
+M: { $$ = new M(); }
 
 %%
 
