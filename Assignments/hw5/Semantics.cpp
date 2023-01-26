@@ -104,6 +104,7 @@ Exp::Exp(Exp *expression, bool validateExpression)
     registerName = expression->registerName;
     if (validateExpression)
     {
+        Debugger::print("Validating expression for type " + expression->type);
         // We need to validate the expression.
         // Check if the expression is bool.
         if (type != "BOOL")
@@ -112,6 +113,7 @@ Exp::Exp(Exp *expression, bool validateExpression)
             exit(0);
         }
         // Emit the required br here.
+        Debugger::print("Emitting br i1 from expression validation");
         int location = buffer.emit("br i1 %" + registerName + ", label @, label @");
         trueList = buffer.makelist(pair<int, BranchLabelIndex>(location, FIRST));
         falseList = buffer.makelist(pair<int, BranchLabelIndex>(location, SECOND));
@@ -199,6 +201,11 @@ Exp::Exp(Exp *left, Node *op, Exp *right, bool isRelop, P *marker)
             // It's a relop. Return type will be bool.
             type = "BOOL";
             // We know the result will be saved in an i1 (bool)
+            Debugger::print("Arrived at arithmetic operation.");
+            if (marker == nullptr)
+            {
+                Debugger::print("Marker is null!!");
+            }
             string llvmReturn = "i1";
             bool isSigned = false;
             if (left->type == "INT" || right->type == "INT")
@@ -256,6 +263,7 @@ Exp::Exp(Exp *left, Node *op, Exp *right, bool isRelop, P *marker)
                     rightRegister = zeroExtension(rightRegister, "i8");
                 }
             }
+            Debugger::print("Emitting icmp line");
             // Emit the comparison.
             buffer.emit("%" + registerName + " = icmp " + icmpRelop + " " + (isSigned ? "i32" : "i8") + " %" + leftRegister + ", %" + rightRegister);
             // Add instruction end according to updated condition
@@ -327,6 +335,7 @@ Exp::Exp(Exp *left, Node *op, Exp *right, bool isRelop, P *marker)
                 }
                 // We need to check if we have a zero division
                 buffer.emit("%" + divisionZeroReg + " = icmp eq i32 %" + rightRegister + ", 0");
+                Debugger::print("Emitting br i1 from division");
                 int zeroDivBranch = buffer.emit("br i1 %" + divisionZeroReg + ", label @, label @");
                 string zeroDivisionLabel = buffer.genLabel();
                 string zeroDivisionExceptionReg = registerProvider.GetNewRegister();
@@ -1065,7 +1074,9 @@ N::N()
 P::P(Exp *exp)
 {
     location = buffer.emit("br i1 %" + exp->registerName + ", label @, label @");
+    Debugger::print("Emitted br1 for register " + exp->registerName);
     instruction = buffer.genLabel();
+    Debugger::print("Emmitted label " + instruction + " for P");
 }
 
 void enterLoop()
