@@ -493,7 +493,6 @@ Exp::Exp(Exp *exp1, Exp *exp2, Exp *exp3)
     // TODO: Check usage and implementation
     Debugger::print("Entered trinary operator!!");
     Debugger::print("Exp1: " + exp1->type + ". Exp2: " + exp2->type + ". Exp3: " + exp3->type);
-    registerName = registerProvider.GetNewRegister();
     trueList = vector<pair<int, BranchLabelIndex>>();
     falseList = vector<pair<int, BranchLabelIndex>>();
     // We need to check if exp1 is boolean.
@@ -531,6 +530,10 @@ Exp::Exp(Exp *exp1, Exp *exp2, Exp *exp3)
         else
             type = exp3->type;
     }
+    // Create a new register.
+    registerName = registerProvider.GetNewRegister();
+    // Add zero.
+    buffer.emit("%" + registerName + " = add " + ToLLVM(type) + " 0,0");
 }
 
 ExpList::ExpList(Exp *exp)
