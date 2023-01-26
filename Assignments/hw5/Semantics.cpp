@@ -48,11 +48,11 @@ string zeroExtension(string registerName, string llvmType)
     return destinationRegister;
 }
 
-string truncateRegister(string registerName, string llvmType)
+string truncateRegister(string registerName, string llvmType, string llvmOriginalType)
 {
-    Debugger::print("Truncating register " + registerName + " from type i32 to " + llvmType);
+    Debugger::print("Truncating register " + registerName + " from type " + llvmOriginalType + " to " + llvmType);
     string destinationRegister = registerProvider.GetNewRegister();
-    buffer.emit("%" + destinationRegister + " = trunc i32 %" + registerName + " to " + llvmType);
+    buffer.emit("%" + destinationRegister + " = trunc " + llvmOriginalType + " %" + registerName + " to " + llvmType);
     return destinationRegister;
 }
 
@@ -328,11 +328,11 @@ Exp::Exp(Exp *left, Node *op, Exp *right, bool isRelop, P *marker)
                 // We have special cases for division,
                 // We need to check for zero divisions and register exceptions.
                 string divisionZeroReg = registerProvider.GetNewRegister();
-                // Division is done signed (i32) - truncate registers if needed.
+                // Division is done signed (i32) - extend registers if needed.
                 if (divisionTruncation)
                 {
-                    leftRegister = truncateRegister(left->registerName, "i8");
-                    rightRegister = truncateRegister(right->registerName, "i8");
+                    leftRegister = zeroExtension(left->registerName, ToLLVM(left->type));
+                    rightRegister = zeroExtension(right->registerName, ToLLVM(right->type));
                 }
                 // We need to check if we have a zero division
                 buffer.emit("%" + divisionZeroReg + " = icmp eq i32 %" + rightRegister + ", 0");
@@ -359,7 +359,7 @@ Exp::Exp(Exp *left, Node *op, Exp *right, bool isRelop, P *marker)
             if (llvmOperation == "sdiv" && divisionTruncation)
             {
                 // Truncate back down to i8.
-                registerName = truncateRegister(registerName, "i8");
+                registerName = truncateRegister(registerName, "i8", "i32");
             }
         }
     }
@@ -473,15 +473,15 @@ Exp::Exp(Type *type, Exp *exp) : Node(type->value)
     this->type = type->value;
     registerName = exp->registerName;
     // Check if we need to zero extend.
-    if(exp->type == "BYTE" && type->value == "INT")
+    if (exp->type == "BYTE" && type->value == "INT")
     {
         // We need to zero extend.
         registerName = zeroExtension(exp->registerName, ToLLVM(exp->type));
     }
     // Do we need to truncate?
-    if(exp->type == "INT" && type->value == "BYTE")
+    if (exp->type == "INT" && type->value == "BYTE")
     {
-        registerName = truncateRegister(exp->registerName, ToLLVM(type->value));
+        registerName = truncateRegister(exp->registerName, ToLLVM(type->value), ToLLVM(exp->value));
     }
     trueList = exp->trueList;
     falseList = exp->falseList;
@@ -493,6 +493,9 @@ Exp::Exp(Exp *exp1, Exp *exp2, Exp *exp3)
     // TODO: Check usage and implementation
     Debugger::print("Entered trinary operator!!");
     Debugger::print("Exp1: " + exp1->type + ". Exp2: " + exp2->type + ". Exp3: " + exp3->type);
+    registerName = registerProvider.GetNewRegister();
+    trueList = vector<pair<int, BranchLabelIndex>>();
+    falseList = vector<pair<int, BranchLabelIndex>>();
     // We need to check if exp1 is boolean.
     if (exp2->type != "BOOL")
     {
@@ -1217,7 +1220,7 @@ string loadVariableToRegister(int offset, string type)
     if (llvmType != "i32")
     {
         // Perform data truncation.
-        registerName = truncateRegister(registerName, llvmType);
+        registerName = truncateRegister(registerName, llvmType, "i32");
     }
     // Return the new register containing the data.
     return registerName;
