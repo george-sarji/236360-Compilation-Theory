@@ -146,10 +146,6 @@ Exp::Exp(Exp *left, Node *op, Exp *right, bool isRelop, P *marker)
     {
         // We know for granted the result is a bool.
         type = "BOOL";
-        if (right->instruction != "")
-            instruction = right->instruction;
-        else
-            instruction = marker->instruction;
         // Let's check if the operation is valid (and/or)
         if (op->value == "and")
         {
@@ -190,6 +186,10 @@ Exp::Exp(Exp *left, Node *op, Exp *right, bool isRelop, P *marker)
             output::errorMismatch(yylineno);
             exit(0);
         }
+        if (right->instruction != "")
+            instruction = right->instruction;
+        else
+            instruction = marker->instruction;
     }
     // Not a boolean operation. Are we comparing numbers?
     else if ((left->type == "INT" || left->type == "BYTE") && (right->type == "INT" || right->type == "BYTE"))
