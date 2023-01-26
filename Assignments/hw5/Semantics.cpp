@@ -651,7 +651,6 @@ Statement::Statement(Exp *exp)
     // This ctor will handle the return exp part.
     Debugger::print("Entered return validations-------------------");
     // We need to check if the returned expression matches with the current scope.
-    // TODO: Check if we are returning the correct type for the current scope.
     // Get the top scope.
     vector<shared_ptr<TableRow>> topScope = table->getTopScope();
     Debugger::print("Current scope is " + currentScope);
@@ -744,7 +743,6 @@ Statement::Statement(Node *node)
         exit(0);
     }
     Debugger::print("Received end of stateemtn");
-    // TODO: Add backpatching and validate.
     int bpLocation = buffer.emit("br label @");
     if (node->value == "break")
     {
