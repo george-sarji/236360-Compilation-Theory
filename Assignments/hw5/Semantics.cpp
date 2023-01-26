@@ -146,37 +146,44 @@ Exp::Exp(Exp *left, Node *op, Exp *right, bool isRelop, P *marker)
     {
         // We know for granted the result is a bool.
         type = "BOOL";
-        // Let's check if the operation is valid (and/or)
-        if (op->value == "and")
+        if (op->value == "and" || op->value == "or")
         {
-            booleanValue = left->booleanValue && right->booleanValue;
-            // We will need to provide two labels - first one for if the left statement is false, and the second for if the right statement is false.
-            int leftFalse = buffer.emit("br label @");
-            string leftFalseLabel = buffer.genLabel();
-            int rightFalse = buffer.emit("br label @");
-            instructionEnd = buffer.genLabel();
-            // Emit a phi that goes according to the right register value.
-            buffer.emit("%" + registerName + " = phi i1 [%" + right->registerName + ", %" + instruction + "],[0, %" + leftFalseLabel + "]");
-            // Backpatch the marker to jump
-            buffer.bpatch(buffer.makelist({marker->location, FIRST}), marker->instruction);
-            // Backpatch marker to jump to left false
-            buffer.bpatch(buffer.makelist({marker->location, SECOND}), leftFalseLabel);
-            // Backpatch both left and right false labels to end of instruction.
-            buffer.bpatch(buffer.makelist({leftFalse, FIRST}), instructionEnd);
-            buffer.bpatch(buffer.makelist({rightFalse, FIRST}), instructionEnd);
-        }
-        else if (op->value == "or")
-        {
-            booleanValue = left->booleanValue || right->booleanValue;
-            int leftTrue = buffer.emit("br label @");
-            string leftTrueLabel = buffer.genLabel();
-            int rightTrue = buffer.emit("br label @");
-            instructionEnd = buffer.genLabel();
-            buffer.emit("%" + registerName + " = phi i1 [%" + right->registerName + ", %" + instruction + "],[1, %" + leftTrueLabel + "]");
-            buffer.bpatch(buffer.makelist({marker->location, FIRST}), leftTrueLabel);
-            buffer.bpatch(buffer.makelist({marker->location, SECOND}), marker->instruction);
-            buffer.bpatch(buffer.makelist({leftTrue, FIRST}), instructionEnd);
-            buffer.bpatch(buffer.makelist({rightTrue, FIRST}), instructionEnd);
+            if (right->instruction != "")
+                instruction = right->instruction;
+            else
+                instruction = marker->instruction;
+            // Let's check if the operation is valid (and/or)
+            if (op->value == "and")
+            {
+                booleanValue = left->booleanValue && right->booleanValue;
+                // We will need to provide two labels - first one for if the left statement is false, and the second for if the right statement is false.
+                int leftFalse = buffer.emit("br label @");
+                string leftFalseLabel = buffer.genLabel();
+                int rightFalse = buffer.emit("br label @");
+                instructionEnd = buffer.genLabel();
+                // Emit a phi that goes according to the right register value.
+                buffer.emit("%" + registerName + " = phi i1 [%" + right->registerName + ", %" + instruction + "],[0, %" + leftFalseLabel + "]");
+                // Backpatch the marker to jump
+                buffer.bpatch(buffer.makelist({marker->location, FIRST}), marker->instruction);
+                // Backpatch marker to jump to left false
+                buffer.bpatch(buffer.makelist({marker->location, SECOND}), leftFalseLabel);
+                // Backpatch both left and right false labels to end of instruction.
+                buffer.bpatch(buffer.makelist({leftFalse, FIRST}), instructionEnd);
+                buffer.bpatch(buffer.makelist({rightFalse, FIRST}), instructionEnd);
+            }
+            else if (op->value == "or")
+            {
+                booleanValue = left->booleanValue || right->booleanValue;
+                int leftTrue = buffer.emit("br label @");
+                string leftTrueLabel = buffer.genLabel();
+                int rightTrue = buffer.emit("br label @");
+                instructionEnd = buffer.genLabel();
+                buffer.emit("%" + registerName + " = phi i1 [%" + right->registerName + ", %" + instruction + "],[1, %" + leftTrueLabel + "]");
+                buffer.bpatch(buffer.makelist({marker->location, FIRST}), leftTrueLabel);
+                buffer.bpatch(buffer.makelist({marker->location, SECOND}), marker->instruction);
+                buffer.bpatch(buffer.makelist({leftTrue, FIRST}), instructionEnd);
+                buffer.bpatch(buffer.makelist({rightTrue, FIRST}), instructionEnd);
+            }
         }
         else
         {
@@ -186,10 +193,6 @@ Exp::Exp(Exp *left, Node *op, Exp *right, bool isRelop, P *marker)
             output::errorMismatch(yylineno);
             exit(0);
         }
-        if (right->instruction != "")
-            instruction = right->instruction;
-        else
-            instruction = marker->instruction;
     }
     // Not a boolean operation. Are we comparing numbers?
     else if ((left->type == "INT" || left->type == "BYTE") && (right->type == "INT" || right->type == "BYTE"))
