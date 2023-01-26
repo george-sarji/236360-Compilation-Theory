@@ -622,7 +622,7 @@ Statement::Statement(Node *id, Exp *exp)
     {
         // We have a valid cast.
         // We need to update the symbol.
-        // TODO: Add data saving to stack and add to registerName
+        registerName = saveVariableToStack(exp->registerName, exp->type, matchingRow->offset);
         instruction = exp->instruction;
     }
     else
@@ -1225,4 +1225,34 @@ void backpatchIfElse(M *ifMarker, N *elseMarker, Exp *exp)
     // Backpatch else exit to outside.
     buffer.bpatch(buffer.makelist({elseMarker->location, FIRST}), endLabel);
     buffer.bpatch(buffer.makelist({endLocation, FIRST}), endLabel);
+}
+
+string saveVariableToStack(string registerName, string type, int offset)
+{
+    string destinationRegister = registerProvider.GetNewRegister();
+    string dataReg = registerName;
+    string llvmType = ToLLVM(type);
+    // Do we need to zero extend?
+    if (llvmType != "i32")
+    {
+        // Zero extend.
+        dataReg = zeroExtension(registerName, llvmType);
+    }
+    // Add the data to the destination register.
+    buffer.emit("%" + destinationRegister + " = add i32 0, %" + dataReg);
+    string ptrRegister = registerProvider.GetNewRegister();
+    // Do we need to save an argument or a variable?
+    if (offset >= 0)
+    {
+        // Get from the stack.
+        buffer.emit("%" + ptrRegister + " = getelementptr [50 x i32], [50 x i32]* %stack, i32 0, i32 " + to_string(offset));
+    }
+    else if (offset < 0 && currentArguments > 0)
+    {
+        // Function argument, not in stack.
+        buffer.emit("%" + ptrRegister + " = getelementptr [" + to_string(currentArguments) + " x i32], [" + to_string(currentArguments) + " x i32]* %args, i32 0, i32 " + to_string(currentArguments + offset));
+    }
+    // Store the variable.
+    buffer.emit("store i32 %" + destinationRegister + ", i32* %" + ptrRegister);
+    return destinationRegister;
 }

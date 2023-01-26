@@ -244,5 +244,6 @@ string loadVariableToRegister(int offset, string type);
 string truncateRegister(string registerName, string llvmType);
 void backpatchIf(M *marker, Exp *exp);
 void backpatchIfElse(M* ifMarker, N* elseMarker, Exp* exp);
+string saveVariableToStack(string registerName, string type, int offset);
 
 #endif
