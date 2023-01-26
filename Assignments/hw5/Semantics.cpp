@@ -856,7 +856,11 @@ Call::Call(Node *id, ExpList *expList)
             if (expressions[i]->type == "BYTE" && types[i] == "INT")
             {
                 string zextRegister = zeroExtension(expressions[i]->registerName, "i8");
-                functionArgs += ToLLVM("INT") + "%" + zextRegister + ",";
+                functionArgs += ToLLVM("INT") + " %" + zextRegister;
+                if (i < types.size() - 1)
+                {
+                    functionArgs += ",";
+                }
                 continue;
             }
             // We have a mismatch in arguments.
