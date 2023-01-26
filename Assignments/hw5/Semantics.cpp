@@ -332,6 +332,7 @@ Exp::Exp(Exp *left, Node *op, Exp *right, bool isRelop, P *marker)
                 if (divisionTruncation)
                 {
                     leftRegister = truncateRegister(left->registerName, "i8");
+                    rightRegister = truncateRegister(right->registerName, "i8");
                 }
                 // We need to check if we have a zero division
                 buffer.emit("%" + divisionZeroReg + " = icmp eq i32 %" + rightRegister + ", 0");
@@ -342,12 +343,13 @@ Exp::Exp(Exp *left, Node *op, Exp *right, bool isRelop, P *marker)
                 buffer.emit("%" + zeroDivisionExceptionReg + " = getelementptr [23 x i8], [23 x i8]* @ThrowZeroException, i32 0, i32 0");
                 buffer.emit("call void @print(i8* %" + zeroDivisionExceptionReg + ")");
                 buffer.emit("call void @exit(i32 0)");
+                int normalDivision = buffer.emit("br label @");
                 string normalDivisionLabel = buffer.genLabel();
                 // Backpatch the zero division branch to jump to normal division if false.
                 buffer.bpatch(buffer.makelist({zeroDivBranch, FIRST}), zeroDivisionLabel);
                 buffer.bpatch(buffer.makelist({zeroDivBranch, SECOND}), normalDivisionLabel);
                 // Backpatch the new label
-                buffer.bpatch(buffer.makelist({zeroDivBranch, FIRST}), zeroDivisionLabel);
+                buffer.bpatch(buffer.makelist({normalDivision, FIRST}), normalDivisionLabel);
                 llvmReturnSize = "i32";
                 llvmOperation = "sdiv";
                 instructionEnd = normalDivisionLabel;
