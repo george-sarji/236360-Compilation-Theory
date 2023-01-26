@@ -215,7 +215,7 @@ Exp::Exp(Exp *left, Node *op, Exp *right, bool isRelop, P *marker)
             if (op->value == "==")
                 icmpRelop = "eq";
             else if (op->value == "!=")
-                icmpRelop = "neq";
+                icmpRelop = "ne";
             else if (op->value == ">")
             {
                 // Do we have an unsigned?
@@ -557,10 +557,10 @@ Statement::Statement(Type *type, Node *id)
     // Convert the type to LLVM type
     string llvmType = ToLLVM(type->value);
     // Declare empty variable.
-    buffer.emit("%" + registerName + " = add" + llvmType + " 0,0");
+    buffer.emit("%" + registerName + " = add " + llvmType + " 0,0");
     // Get a new register pointer for use in fetching.
     string newPointer = registerProvider.GetNewRegister();
-    buffer.emit("%" + newPointer + " = getelementptr [50 x i32], [50 x i32*]* %stack, i32 0, i32 " + to_string(offset));
+    buffer.emit("%" + newPointer + " = getelementptr [50 x i32], [50 x i32]* %stack, i32 0, i32 " + to_string(offset));
     string dataRegisterName = registerName;
     // Do we need to perform zero extension?
     if (llvmType != "i32")
@@ -601,7 +601,7 @@ Statement::Statement(Type *type, Node *id, Exp *exp)
             newRegister = zeroExtension(exp->registerName, "i8");
         }
         // Emit start of variable (add 0)
-        buffer.emit("%" + registerName + " = add " + llvmType + " 0,%" + newRegister);
+        buffer.emit("%" + registerName + " = add " + llvmType + " 0, %" + newRegister);
         // Get a pointer register.
         string ptrRegister = registerProvider.GetNewRegister();
         // Get stack element.
