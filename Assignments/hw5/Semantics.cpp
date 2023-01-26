@@ -302,6 +302,7 @@ Exp::Exp(Exp *left, Node *op, Exp *right, bool isRelop, P *marker)
 
             // Let's check what operation we have.
             string llvmOperation;
+            bool divisionTruncation = left->type == "BYTE" && right->type == "BYTE";
             if (op->value == "+")
             {
                 llvmOperation = "add";
@@ -318,11 +319,37 @@ Exp::Exp(Exp *left, Node *op, Exp *right, bool isRelop, P *marker)
             {
                 // We have special cases for division,
                 // We need to check for zero divisions and register exceptions.
-                string exceptionRegister = registerProvider.GetNewRegister();
+                string divisionZeroReg = registerProvider.GetNewRegister();
+                // Division is done signed (i32) - truncate registers if needed.
+                if (divisionTruncation)
+                {
+                    leftRegister = truncateRegister(left->registerName, "i8");
+                }
+                // We need to check if we have a zero division
+                buffer.emit("%" + divisionZeroReg + " = icmp eq i32 %" + rightRegister + ", 0");
+                int zeroDivBranch = buffer.emit("br i1 %" + divisionZeroReg + ", label @, label @");
+                string zeroDivisionLabel = buffer.genLabel();
+                string zeroDivisionExceptionReg = registerProvider.GetNewRegister();
+                buffer.emit("%" + zeroDivisionExceptionReg + " = getelementptr [23 x i8], [23 x i8]* @ThrowZeroException, i32 0, i32 0");
+                buffer.emit("call void @print(i8* %" + zeroDivisionExceptionReg + ")");
+                buffer.emit("call void @exit(i32 0)");
+                string normalDivisionLabel = buffer.genLabel();
+                // Backpatch the zero division branch to jump to normal division if false.
+                buffer.bpatch(buffer.makelist({zeroDivBranch, FIRST}), zeroDivisionLabel);
+                buffer.bpatch(buffer.makelist({zeroDivBranch, SECOND}), normalDivisionLabel);
+                // Backpatch the new label
+                buffer.bpatch(buffer.makelist({zeroDivBranch, FIRST}), zeroDivisionLabel);
+                llvmReturnSize = "i32";
+                llvmOperation = "sdiv";
+                instructionEnd = normalDivisionLabel;
             }
             // Emit the operation line.
             buffer.emit("%" + registerName + " = " + llvmOperation + " " + llvmReturnSize + " %" + leftRegister + ", %" + rightRegister);
-            // TODO: Add truncation back to i8 sizes after division.
+            if (llvmOperation == "sdiv" && divisionTruncation)
+            {
+                // Truncate back down to i8.
+                registerName = truncateRegister(registerName, "i8");
+            }
         }
     }
     else
