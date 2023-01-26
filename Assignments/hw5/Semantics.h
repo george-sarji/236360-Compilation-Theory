@@ -245,5 +245,6 @@ string truncateRegister(string registerName, string llvmType);
 void backpatchIf(M *marker, Exp *exp);
 void backpatchIfElse(M* ifMarker, N* elseMarker, Exp* exp);
 string saveVariableToStack(string registerName, string type, int offset);
+Statement* mergeLists(Statement* ifStatement, Statement* elseStatement);
 
 #endif

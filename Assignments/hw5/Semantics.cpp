@@ -1256,3 +1256,10 @@ string saveVariableToStack(string registerName, string type, int offset)
     buffer.emit("store i32 %" + destinationRegister + ", i32* %" + ptrRegister);
     return destinationRegister;
 }
+
+Statement *mergeLists(Statement *ifStatement, Statement *elseStatement)
+{
+    ifStatement->breakList = buffer.merge(ifStatement->breakList, elseStatement->breakList);
+    ifStatement->continueList = buffer.merge(ifStatement->continueList, elseStatement->continueList);
+    return ifStatement;
+}
