@@ -768,6 +768,7 @@ Statement::Statement()
         }
     }
     value = "VOID";
+    buffer.emit("ret void");
     breakList = vector<pair<int, BranchLabelIndex>>();
     continueList = vector<pair<int, BranchLabelIndex>>();
 }
