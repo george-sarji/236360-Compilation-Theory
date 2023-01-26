@@ -1031,6 +1031,8 @@ Program::Program() : Node("Program")
     Debugger::print("Defining specifiers for types");
     buffer.emitGlobal("@.int_specifier = constant [4 x i8] c\"%d\\0A\\00\"");
     buffer.emitGlobal("@.str_specifier = constant [4 x i8] c\"%s\\0A\\00\"");
+    // Declare zero exceptio message
+    buffer.emitGlobal("@ThrowZeroException = constant [23 x i8] c\"Error division by zero\\00\"");
     // Declare print and printi functions as given.
     Debugger::print("Defining printi");
     buffer.emitGlobal("define void @printi(i32) {");
@@ -1096,7 +1098,6 @@ void exitLoop(N *whileCondition, P *innerMarker, Statement *statement)
     {
         buffer.bpatch(statement->breakList, label);
     }
-    // TODO: Add backpatching for loops according to markers and statement
 }
 
 void backfillFunctionArguments(Formals *formals)
