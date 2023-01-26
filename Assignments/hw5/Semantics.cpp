@@ -469,8 +469,18 @@ Exp::Exp(Type *type, Exp *exp) : Node(type->value)
     }
     Debugger::print("Exp validatedw with type " + type->value + " and exp type " + exp->type);
     this->type = type->value;
-    // TODO: Add register usage here.
-    registerName = registerProvider.GetNewRegister();
+    registerName = exp->registerName;
+    // Check if we need to zero extend.
+    if(exp->type == "BYTE" && type->value == "INT")
+    {
+        // We need to zero extend.
+        registerName = zeroExtension(exp->registerName, ToLLVM(exp->type));
+    }
+    // Do we need to truncate?
+    if(exp->type == "INT" && type->value == "BYTE")
+    {
+        registerName = truncateRegister(exp->registerName, ToLLVM(type->value));
+    }
     trueList = exp->trueList;
     falseList = exp->falseList;
     instruction = exp->instruction;
